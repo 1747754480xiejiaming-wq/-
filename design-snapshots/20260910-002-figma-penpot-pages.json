@@ -1,0 +1,51 @@
+{
+  "snapshot_id": "SNAP-20260910-005",
+  "created_at": "2026-09-10T00:00:00+08:00",
+  "primary_canvas": {
+    "platform": "Figma",
+    "file_key": "cRMwXR1psHjb4MgkhD5WC2",
+    "file_url": "https://www.figma.com/design/cRMwXR1psHjb4MgkhD5WC2",
+    "write_status": "generate_figma_design capture completed; use_figma remains limited by Starter plan",
+    "nodes": {
+      "tea_detail_desktop": "8:2",
+      "brew_desktop": "9:2",
+      "qa_desktop": "10:2",
+      "admin_review_desktop": "11:2",
+      "home_desktop": "12:2",
+      "catalog_desktop": "13:2",
+      "inquiry_desktop": "14:2",
+      "admin_overview_desktop": "15:2",
+      "home_mobile": "16:2",
+      "tea_detail_mobile": "17:2",
+      "brew_mobile": "18:2"
+    },
+    "note": "Node 7:2 is an early route-capture diagnostic and is intentionally excluded from the accepted node list."
+  },
+  "fallback_canvas": {
+    "platform": "Penpot",
+    "file_id": "c828d3cf-7d4e-8145-8008-9dca1ec2817d",
+    "file_url": "https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dca1ec2817d&page-id=2fd4944b-225d-804f-8008-9dccb0930c71",
+    "pages": [
+      "01 · 首页 · Desktop",
+      "02 · 茶品详情 · Desktop",
+      "03 · 桌面端关键流程",
+      "04 · 移动端关键流程",
+      "05 · 设计令牌",
+      "06 · 组件与状态",
+      "07 · 交互流程"
+    ],
+    "source_assets": "design-snapshots/penpot-assets",
+    "review": "Page names, image visibility, desktop and mobile horizontal layouts, token reference, component states, and UX flow were visually checked."
+  },
+  "skills": [
+    "brainstorming",
+    "figma-use",
+    "figma-generate-design",
+    "figma-generate-library",
+    "penpot-router",
+    "playwright"
+  ],
+  "code_baseline": "prototype",
+  "git_commit": "self",
+  "push_status": "pending"
+}

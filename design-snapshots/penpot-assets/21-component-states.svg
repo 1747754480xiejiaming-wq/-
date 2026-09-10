@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960">
+  <rect width="1440" height="960" fill="#F7F2E8"/>
+  <text x="72" y="88" font-family="Arial" font-size="18" font-weight="700" fill="#A8482A">CHA XU / COMPONENT STATES</text>
+  <text x="72" y="146" font-family="Arial" font-size="42" font-weight="700" fill="#173B2D">组件与反馈状态</text>
+  <g transform="translate(72 218)">
+    <rect width="1296" height="660" rx="28" fill="#FFFDF8" stroke="#E0D7C8"/>
+    <text x="36" y="54" font-family="Arial" font-size="22" font-weight="700" fill="#173B2D">Button</text>
+    <rect x="36" y="84" width="170" height="52" rx="12" fill="#254E3E"/><text x="79" y="117" font-family="Arial" font-size="16" font-weight="700" fill="#FFFFFF">开始选茶 →</text>
+    <rect x="228" y="84" width="170" height="52" rx="12" fill="#173B2D"/><text x="276" y="117" font-family="Arial" font-size="16" font-weight="700" fill="#FFFFFF">悬停状态</text>
+    <rect x="420" y="84" width="170" height="52" rx="12" fill="#E3E6E2"/><text x="468" y="117" font-family="Arial" font-size="16" font-weight="700" fill="#89928C">不可操作</text>
+    <text x="36" y="204" font-family="Arial" font-size="22" font-weight="700" fill="#173B2D">Input</text>
+    <rect x="36" y="232" width="360" height="56" rx="12" fill="#FFFFFF" stroke="#C8D1CB"/><text x="56" y="267" font-family="Arial" font-size="16" fill="#819087">搜索茶名或 SKU</text>
+    <rect x="420" y="232" width="360" height="56" rx="12" fill="#FFFFFF" stroke="#A8482A" stroke-width="2"/><text x="440" y="267" font-family="Arial" font-size="16" fill="#173B2D">请输入有效手机号或邮箱</text>
+    <text x="36" y="356" font-family="Arial" font-size="22" font-weight="700" fill="#173B2D">Status &amp; Boundary</text>
+    <rect x="36" y="386" width="104" height="34" rx="17" fill="#E5EFE8"/><text x="57" y="408" font-family="Arial" font-size="14" fill="#254E3E">资料已审核</text>
+    <rect x="156" y="386" width="104" height="34" rx="17" fill="#F8EBDD"/><text x="177" y="408" font-family="Arial" font-size="14" fill="#A8482A">报价已过期</text>
+    <rect x="276" y="386" width="104" height="34" rx="17" fill="#EEF0EE"/><text x="297" y="408" font-family="Arial" font-size="14" fill="#617267">通用指引</text>
+    <g transform="translate(36 468)"><rect width="372" height="142" rx="18" fill="#F4F7F4"/><text x="22" y="38" font-family="Arial" font-size="17" font-weight="700" fill="#173B2D">加载中</text><text x="22" y="72" font-family="Arial" font-size="15" fill="#617267">正在核对茶品资料与来源…</text><rect x="22" y="96" width="260" height="12" rx="6" fill="#DDE6E0"/></g>
+    <g transform="translate(438 468)"><rect width="372" height="142" rx="18" fill="#FFF6F1" stroke="#E9C7B8"/><text x="22" y="38" font-family="Arial" font-size="17" font-weight="700" fill="#8B351F">暂时无法确认</text><text x="22" y="72" font-family="Arial" font-size="15" fill="#6B4D43">未找到足够资料，建议更换问法。</text><text x="22" y="110" font-family="Arial" font-size="15" font-weight="700" fill="#A8482A">重新提问</text></g>
+    <g transform="translate(840 468)"><rect width="372" height="142" rx="18" fill="#F4F7F4"/><text x="22" y="38" font-family="Arial" font-size="17" font-weight="700" fill="#173B2D">暂无内容</text><text x="22" y="72" font-family="Arial" font-size="15" fill="#617267">当前筛选条件下没有茶品。</text><text x="22" y="110" font-family="Arial" font-size="15" font-weight="700" fill="#254E3E">清除筛选</text></g>
+  </g>
+</svg>

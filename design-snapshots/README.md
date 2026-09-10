@@ -4,3 +4,4 @@ Figma 是主画布，Penpot 仅在 Figma 需要付费或额度耗尽时承接受
 
 文件命名：`YYYYMMDD-NNN-平台-范围.json`。清单至少包含：快照编号、平台、设计文件链接、页面或节点、变更摘要、导出物、对应代码基线和 Git commit。
 
+当前最新清单：[`20260910-002-figma-penpot-pages.json`](20260910-002-figma-penpot-pages.json)。

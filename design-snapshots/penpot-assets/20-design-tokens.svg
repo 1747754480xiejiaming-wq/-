@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960">
+  <rect width="1440" height="960" fill="#F7F2E8"/>
+  <text x="72" y="88" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#A8482A">CHA XU / DESIGN TOKENS</text>
+  <text x="72" y="146" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#173B2D">茶序 · 设计令牌</text>
+  <text x="72" y="184" font-family="Arial, sans-serif" font-size="18" fill="#617267">与 Figma 主画布、React 原型保持同一套语义与视觉基线</text>
+  <g transform="translate(72 236)">
+    <rect width="622" height="280" rx="24" fill="#FFFDF8" stroke="#E0D7C8"/>
+    <text x="28" y="44" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#173B2D">颜色 / Color</text>
+    <g transform="translate(28 76)">
+      <rect width="112" height="112" rx="18" fill="#173B2D"/><text x="0" y="142" font-family="Arial" font-size="15" fill="#173B2D">茶墨绿</text><text x="0" y="164" font-family="Arial" font-size="13" fill="#617267">#173B2D</text>
+      <rect x="142" width="112" height="112" rx="18" fill="#254E3E"/><text x="142" y="142" font-family="Arial" font-size="15" fill="#173B2D">主茶绿</text><text x="142" y="164" font-family="Arial" font-size="13" fill="#617267">#254E3E</text>
+      <rect x="284" width="112" height="112" rx="18" fill="#A8482A"/><text x="284" y="142" font-family="Arial" font-size="15" fill="#173B2D">朱砂</text><text x="284" y="164" font-family="Arial" font-size="13" fill="#617267">#A8482A</text>
+      <rect x="426" width="112" height="112" rx="18" fill="#F7F2E8" stroke="#D8CFC0"/><text x="426" y="142" font-family="Arial" font-size="15" fill="#173B2D">米白</text><text x="426" y="164" font-family="Arial" font-size="13" fill="#617267">#F7F2E8</text>
+    </g>
+  </g>
+  <g transform="translate(746 236)">
+    <rect width="622" height="280" rx="24" fill="#FFFDF8" stroke="#E0D7C8"/>
+    <text x="28" y="44" font-family="Arial" font-size="22" font-weight="700" fill="#173B2D">字体 / Typography</text>
+    <text x="28" y="100" font-family="Arial" font-size="36" font-weight="700" fill="#173B2D">好好认识一杯茶</text>
+    <text x="28" y="140" font-family="Arial" font-size="16" fill="#617267">Display 36/48 · 700 · 关键标题</text>
+    <text x="28" y="190" font-family="Arial" font-size="24" font-weight="700" fill="#173B2D">循着茶香，慢慢探索</text>
+    <text x="28" y="222" font-family="Arial" font-size="16" fill="#617267">Heading 24/34 · 700</text>
+    <text x="28" y="258" font-family="Arial" font-size="16" fill="#34483E">正文 16/28 · 清晰、克制、有出处</text>
+  </g>
+  <g transform="translate(72 556)">
+    <rect width="622" height="316" rx="24" fill="#FFFDF8" stroke="#E0D7C8"/>
+    <text x="28" y="44" font-family="Arial" font-size="22" font-weight="700" fill="#173B2D">间距与圆角 / Spacing &amp; Radius</text>
+    <g fill="#254E3E"><rect x="28" y="82" width="8" height="52"/><rect x="64" y="82" width="16" height="52"/><rect x="108" y="82" width="24" height="52"/><rect x="160" y="82" width="32" height="52"/><rect x="220" y="82" width="48" height="52"/><rect x="296" y="82" width="64" height="52"/></g>
+    <text x="28" y="164" font-family="Arial" font-size="15" fill="#617267">4px 基准网格：8 / 16 / 24 / 32 / 48 / 64</text>
+    <rect x="28" y="202" width="126" height="72" rx="8" fill="#EEF3EE"/><rect x="178" y="202" width="126" height="72" rx="16" fill="#E5ECE7"/><rect x="328" y="202" width="126" height="72" rx="24" fill="#DCE6DF"/>
+    <text x="28" y="300" font-family="Arial" font-size="15" fill="#617267">Radius： 8 · 16 · 24</text>
+  </g>
+  <g transform="translate(746 556)">
+    <rect width="622" height="316" rx="24" fill="#173B2D"/>
+    <text x="28" y="44" font-family="Arial" font-size="22" font-weight="700" fill="#FFFDF8">可用性约束 / UX Gates</text>
+    <g font-family="Arial" font-size="17" fill="#F7F2E8">
+      <text x="28" y="92">✓ 正文对比度达到 WCAG AA</text><text x="28" y="132">✓ 关键触控区域不少于 44 × 44</text><text x="28" y="172">✓ 操作结果具备加载、成功、失败与空状态</text><text x="28" y="212">✓ 货源、功效与问答均显示资料边界</text><text x="28" y="252">✓ 表单收集前明确示用途并取得主动同意</text>
+    </g>
+  </g>
+</svg>

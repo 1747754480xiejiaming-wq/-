@@ -3,7 +3,7 @@
   "file_key": "cRMwXR1psHjb4MgkhD5WC2",
   "file_url": "https://www.figma.com/design/cRMwXR1psHjb4MgkhD5WC2",
   "approval": "用户已批准茶序方案，并授权后续常规配色、组件、页面检查自行完成",
-  "phase": "figma_primary_penpot_fallback_pending_connection",
+  "phase": "figma_capture_complete_penpot_fallback_complete",
   "pages": {
     "design_system": "0:1",
     "desktop": "3:2",
@@ -23,9 +23,24 @@
     "53 variables and 9 text styles created",
     "Button/Input/Badge screenshot-reviewed",
     "React prototype build passed",
-    "Desktop/mobile browser flows verified"
+    "Desktop/mobile browser flows verified",
+    "8 desktop and 3 mobile React pages captured into Figma",
+    "7-page Penpot fallback canvas visually reviewed"
   ],
-  "blocker": "Figma Starter MCP tool call limit reached; route only blocked canvas work to Penpot until Figma quota is available again",
+  "blocker": "Figma Starter use_figma call limit remains reached; generate_figma_design capture succeeded and Penpot holds the fallback review canvas",
+  "captures": {
+    "tea_detail_desktop": "8:2",
+    "brew_desktop": "9:2",
+    "qa_desktop": "10:2",
+    "admin_review_desktop": "11:2",
+    "home_desktop": "12:2",
+    "catalog_desktop": "13:2",
+    "inquiry_desktop": "14:2",
+    "admin_overview_desktop": "15:2",
+    "home_mobile": "16:2",
+    "tea_detail_mobile": "17:2",
+    "brew_mobile": "18:2"
+  },
   "canvas_policy": {
     "primary": "Figma",
     "fallback": "Penpot",
@@ -35,8 +50,19 @@
   },
   "penpot": {
     "ai_kit": "0.3.0 installed globally for Codex",
-    "mcp": "not configured in the installation turn",
-    "canvas": "not created yet"
+    "mcp": "not exposed in this Codex session; browser fallback used",
+    "file_id": "c828d3cf-7d4e-8145-8008-9dcadfc52fa0",
+    "file_url": "https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71",
+    "canvas": "created and populated",
+    "pages": [
+      "01 · 首页 · Desktop",
+      "02 · 茶品详情 · Desktop",
+      "03 · 桌面端关键流程",
+      "04 · 移动端关键流程",
+      "05 · 设计令牌",
+      "06 · 组件与状态",
+      "07 · 交互流程"
+    ]
   },
   "local_prototype": "prototype",
   "qa_record": "prototype/验收记录.md"
