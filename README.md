@@ -4,6 +4,8 @@
 
 GitHub 仓库：<https://github.com/1747754480xiejiaming-wq/->
 
+版本状态：`main` 保存已验证快照；后续每次代码或画布更新都会同步维护本 README、快照记录并推送。
+
 ![茶序用户端首页](output/playwright/18-home-preview.png)
 
 ## 当前进度

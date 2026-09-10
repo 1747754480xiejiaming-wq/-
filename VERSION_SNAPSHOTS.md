@@ -4,9 +4,10 @@
 
 | 快照编号 | 类型 | 内容 | 验证 | Git 状态 |
 |---|---|---|---|---|
-| SNAP-20260910-001 | full | 茶序 React 交互原型、接口契约、Figma 基础设计状态、画布切换规则与浏览器验收截图 | `npm run build` 通过；验收记录已生成 | 本地快照分支；待配置 GitHub 远程后推送 |
-| SNAP-20260910-002 | docs | 新增仓库总览 README，并将每次更新 README 写入项目快照规则 | Markdown 差异检查 | 本地快照分支；待 GitHub App 获得目标仓库权限后推送 |
-| SNAP-20260910-003 | docs | 记录 GitHub 目标仓库并准备首次远程上传 | 远程仓库为空；README 链接检查 | 准备推送至 GitHub `main` |
+| SNAP-20260910-001 | full | 茶序 React 交互原型、接口契约、Figma 基础设计状态、画布切换规则与浏览器验收截图 | `npm run build` 通过；验收记录已生成 | 已推送至 GitHub `main` |
+| SNAP-20260910-002 | docs | 新增仓库总览 README，并将每次更新 README 写入项目快照规则 | Markdown 差异检查 | 已推送至 GitHub `main` |
+| SNAP-20260910-003 | docs | 记录 GitHub 目标仓库并完成首次远程上传 | 远程 `main` 已核对至 `43a045f` | 已推送至 GitHub `main` |
+| SNAP-20260910-004 | docs | 同步 README 与快照记录的远程状态 | Markdown 差异检查 | 随本次提交推送至 GitHub `main` |
 
 ## 回滚方法
 
