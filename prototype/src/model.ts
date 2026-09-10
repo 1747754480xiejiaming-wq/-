@@ -6,7 +6,7 @@ export type TeaItem = { id:string; teaId:string; name:string; subtitle:string; c
 export type Lead = {id:string; name:string; contact:string; item:string; kind:string; status:'new'|'assigned'|'contacted'|'closed'; date:string; note:string};
 export type Audit = {id:string; action:string; object:string; role:string; time:string};
 export const roleNames:Record<Role,string>={operator:'数据运营',reviewer:'客户审核人',lead:'线索跟进',admin:'项目管理员'};
-export const statusNames:Record<ItemStatus,string>={published:'已发布',draft:'草稿',pending_review:'待审核',approved:'审核通过',withdrawn:'已下线'};
+export const statusNames:Record<ItemStatus,string>={published:'已发布',draft:'草稿',pending_review:'待审核',approved:'审核通过',withdrawn:'已下架'};
 export const seedItems:TeaItem[]=[
 {id:'longjing-2026',teaId:'longjing',name:'西湖龙井',subtitle:'一杯清鲜，慢慢认识春天',category:'绿茶',origin:'浙江 · 杭州',sku:'LJ-050',batch:'2026-SPR-A',year:2026,taste:['清鲜','豆香','回甘'],water:85,seconds:30,grams:3,vessel:'玻璃杯',status:'published',revision:2,offer:'valid',specific:true,price:'168',description:'扁平挺秀的叶形，清鲜的香气。先认识这款茶的滋味，再找到适合自己的冲泡节奏。'},
 {id:'qimen-2026',teaId:'qimen',name:'祁门红茶',subtitle:'花果香里，留一刻从容',category:'红茶',origin:'安徽 · 祁门',sku:'QM-050',batch:'2026-SPR-A',year:2026,taste:['花果香','醇和','甜润'],water:90,seconds:20,grams:5,vessel:'白瓷盖碗',status:'published',revision:1,offer:'valid',specific:true,price:'128',description:'细细舒展的茶叶，在热水中慢慢释放花果香。用一盏白瓷盖碗，体会每一泡的变化。'},
