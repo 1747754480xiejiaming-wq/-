@@ -1,0 +1,23 @@
+{
+  "snapshot_id": "SNAP-20260910-001",
+  "platform": "Figma",
+  "role": "primary_canvas",
+  "file_name": "茶序 · 茶文化智能体产品原型",
+  "file_url": "https://www.figma.com/design/cRMwXR1psHjb4MgkhD5WC2",
+  "file_key": "cRMwXR1psHjb4MgkhD5WC2",
+  "pages": {
+    "design_system": "0:1",
+    "desktop": "3:2",
+    "mobile": "3:3"
+  },
+  "components": {
+    "button": "4:45",
+    "input": "4:57",
+    "badge": "6:15"
+  },
+  "summary": "53 个变量、9 个文字样式及 Button、Input、Badge 基础组件；完整页面因 Figma Starter MCP 调用额度耗尽尚未写入。",
+  "interaction_baseline": "prototype/",
+  "evidence": "output/playwright/",
+  "git_commit": "self (the commit containing this manifest)",
+  "push_status": "pending_remote_configuration"
+}
