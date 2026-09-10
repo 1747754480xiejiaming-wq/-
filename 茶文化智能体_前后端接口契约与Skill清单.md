@@ -166,7 +166,7 @@ R 必须细分 `review_domains`：`tea_content` 用于茶叶、功效、泡茶�
 | C09 | GET `/admin/reviews` | `resource?,status?:pending或resolved,page?,page_size?` | `Page<ReviewSummary>` | R/A；R 只能访问对应领域 |
 | C10 | POST `/admin/content/{resource}/{id}/review` | `{revision:integer,decision:approve或reject,comment:string}` | `ContentDetail<T>` | 对应领域 R + If-Match；禁止审核自己的修改；拒绝必须说明原因；approve 时重新核验依赖并在同一事务中自动发布，响应直接为 published |
 | C11 | POST `/admin/content/{resource}/{id}/withdraw` | `{revision:integer,reason:string}` | `ContentDetail<T>` | O/A + If-Match；仅 published 可执行；立即阻止公开读取和咨询创建，并触发检索索引失效 |
-| C12 | POST `/admin/content/{resource}/{id}/relist` | `{revision:integer,reason?:string}` | `ContentDetail<T>` | O/A + If-Match；仅 withdrawn 可执行；重新核验来源和发布依赖后直接恢复 published，保留内容版本且不创建新审核 |
+| C12 | POST `/admin/content/{resource}/{id}/relist` | `{revision:integer,reason?:string}` | `ContentDetail<T>` | O/A + If-Match；仅 withdrawn 可执行；直接恢复已审核版本为 published，不创建新审核、不增加内容 revision；若该商品因本次演示来源撤回而不可见，同一事务恢复其来源可用状态和公开索引，响应返回后 U02/U04/U05 必须可读 |
 | C13 | DELETE `/admin/content/tea-items/{id}` | `{reason:string}` | 204 | A 可逻辑删除任意商品；O 仅可删除未提交 draft；需 If-Match。公开版本、历史版本和审计事实不做物理擦除 |
 
 商品删除是逻辑删除：默认内容列表、公开读取、问答检索和咨询创建均排除 deleted；历史版本和审计记录保留。其他内容资源不提供删除接口。历史发布版本不得被 PATCH 覆写；回滚内容必须复制旧版本到新草稿，重新审核并自动发布。单个 stable ID 同时只允许一个活动发布版本、一个工作版本。
@@ -175,7 +175,7 @@ R 必须细分 `review_domains`：`tea_content` 用于茶叶、功效、泡茶�
 
 `ContentSummary` 为上述元数据加 `title:string`，不带 payload。`VersionSummary={revision,status,created_at,updated_at,updated_by,reviewed_by?,change_reason?:string}`。`ReviewSummary={resource,content_id,revision,title,submitted_by,submitted_at,review_domain,status:pending或resolved}`。
 
-状态允许：`draft → pending_review → published`，其中审核通过与发布为同一事务；`pending_review → rejected → draft`；`published → withdrawn/expired/superseded/deleted`；`withdrawn → published` 可由 O/A 在依赖与来源仍有效时直接执行，不再审核且不增加内容 revision；未提交 `draft → deleted`。到期和下架由读取条件立即生效，后台任务补记 expired；不得依赖定时任务及时运行才阻止读取。撤回授权同时阻断依赖资料，不覆盖已有审计事实。
+状态允许：`draft → pending_review → published`，其中审核通过与发布为同一事务；`pending_review → rejected → draft`；`published → withdrawn/expired/superseded/deleted`；`withdrawn → published` 可由 O/A 直接执行，恢复最近一次已审核版本和对应公开来源可用状态，不再审核且不增加内容 revision；未提交 `draft → deleted`。到期和下架由读取条件立即生效，后台任务补记 expired；不得依赖定时任务及时运行才阻止读取。独立撤回、过期或法务禁用的外部来源仍须由来源权限流程恢复，不能由商品上架绕过。
 
 ### 4.3 导入与文件
 
@@ -349,7 +349,7 @@ Skill 是任务工作方法，React、FastAPI、pytest、OpenAPI、Ollama 是技
 2. **先完成一条纵向业务链。** 测试数据准备一个 Tea、两个不同批次 TeaItem、一份通用功效、一份具体配方、一条来源和一条有效货源，验证选茶→说明→泡茶→咨询。样例注明非正式资料。
 3. **前端按契约开发。** 从固定契约生成 TS 类型与客户端；Mock 必须通过同一 JSON Schema 验证；组件不手写另一个字段版本。Mock 用于独立开发，验收切到真实 API。
 4. **后端按模块实现。** 内容与发布、导入文件、咨询、问答分别保持内部边界；逐条验证请求、响应、错误码和权限。所有公开查询使用公共的可发布性判断。
-5. **完成后台内容循环。** 导入→校验→草稿→审核并自动发布→前台可见→下架或撤权→前台和问答不可见；来源有效时，下架商品可直接重新上架并恢复公开访问；加入草稿与线上版本并存验证。
+5. **完成后台内容循环。** 导入→校验→草稿→审核并自动发布→前台可见→下架或演示来源撤回→前台和问答不可见；下架商品可直接重新上架，原型同步恢复演示来源并恢复公开访问；加入草稿与线上版本并存验证。
 6. **浏览器联合验证。** 使用 Playwright 走真实服务，测试桌面和移动端，记录环境、应用提交版本、契约版本、数据集版本与失败证据。
 7. **形成交付证据。** API 契约报告、端到端结果、30 个真实问题的逐条核验、权限测试、备份恢复和部署回滚记录。仅页面截图、Swagger 可打开或接口返回 200 都不足以代表通过。
 
@@ -383,7 +383,7 @@ Skill 是任务工作方法，React、FastAPI、pytest、OpenAPI、Ollama 是技
 | T20 | 导出完成后下载、过期、Excel 打开 | 权限和期限正确；敏感列受控；公式字符不被执行 |
 | T21 | 任务执行时后端重启 | 导入/导出可恢复或明确失败，不显示虚假成功，不重复写入 |
 | T22 | 客户审核人通过待审内容 | 审核、依赖复核、版本替换与审计在同一事务完成；响应直接为 published；失败时不产生部分发布 |
-| T23 | 数据运营或管理员上下架商品、管理员删除商品、运营删除草稿 | published 只允许下架，withdrawn 只允许重新上架；上下架两按钮互斥；重新上架重新校验来源与依赖、无需复审且内容 revision 不变；下架和逻辑删除立即关闭公开详情与咨询创建；O 不能删除已提交或已发布商品；历史版本与审计保留 |
+| T23 | 数据运营或管理员上下架商品、管理员删除商品、运营删除草稿 | published 只允许下架，withdrawn 只允许重新上架；上下架两按钮互斥；重新上架无需复审且内容 revision 不变；演示来源撤回后重新上架同步恢复来源状态，响应后公开列表、详情与咨询入口立即恢复；下架和逻辑删除立即关闭公开详情与咨询创建；O 不能删除已提交或已发布商品；历史版本与审计保留 |
 | T24 | 备份恢复和应用版本回滚 | 数据与附件引用可恢复；迁移兼容性经验证，不能只回滚前端文件 |
 
 业务资料验收沿用原方案建议：1 至 2 个茶类、约 20 个代表茶品、至少 20 条完整冲泡方案（其中至少 5 条绑定具体茶品）、约 20 个货源 SKU、至少 30 个真实问答及对应审核答案。数量最终取决于客户确认范围；演示数据不能充抵真实来源、授权和专家审核。
