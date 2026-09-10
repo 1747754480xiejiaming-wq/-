@@ -9,6 +9,7 @@
 | SNAP-20260910-003 | docs | 记录 GitHub 目标仓库并完成首次远程上传 | 远程 `main` 已核对至 `43a045f` | 已推送至 GitHub `main` |
 | SNAP-20260910-004 | docs | 同步 README 与快照记录的远程状态 | Markdown 差异检查 | 随本次提交推送至 GitHub `main` |
 | SNAP-20260910-005 | full | Figma 新增 8 个桌面端与 3 个移动端页面捕获；Penpot 新建 7 页备用画布；补充画布捕获路由、令牌、组件和流程参考资产 | `npm run build`；Figma 11 个节点生成完成；Penpot 页面清单与可见性检查 | 随本次提交推送至 GitHub `main` |
+| SNAP-20260910-006 | code | 修正用户端主导航活动指示条居中；将茶品批次原生下拉框替换为符合茶序视觉语言的自定义选择菜单 | `npm run build`；浏览器检查 1440px 展开样式；成功切换至 `longjing-2025` | 随本次提交推送至 GitHub `main` |
 
 ## 回滚方法
 

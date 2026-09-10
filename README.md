@@ -13,6 +13,7 @@ GitHub 仓库：<https://github.com/1747754480xiejiaming-wq/->
 - 用户端：首页、检索与筛选、茶品和批次档案、功效与资料来源、分步冲泡、问答、货源、咨询和脱敏回执。
 - 管理后台：工作概览、内容草稿、审核与独立发布、下线、CSV 导入校验、咨询线索、角色权限和操作记录。
 - 响应式：已检查 1440、768、390 和 375 宽度。
+- UI 细节：主导航活动指示条已居中文字；茶品详情批次选择已统一为米白、深茶绿风格的自定义菜单，并支持键盘操作。
 - 数据状态：使用浏览器本机演示数据，尚未接入正式后端、数据库、身份系统或真实大模型。
 - 设计画布：Figma 已新增 8 个桌面端与 3 个移动端可编辑网页捕获；Penpot 已建立 7 页备用评审画布，覆盖桌面端、移动端、设计令牌、组件状态与关键流程。
 
@@ -64,7 +65,7 @@ Figma 主文件：[茶序 · 茶文化智能体产品原型](https://www.figma.c
 
 Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71)。本轮 Figma `use_figma` 因 Starter 调用上限受阻，按既定规则改由 Penpot 完成备用画布，并保留回同步清单。
 
-最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)。
+最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新代码快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260910-006`。
 
 ## 目录结构
 
