@@ -128,7 +128,7 @@ expect((await publicApi.getTeaItem('longjing-2026')).id).toBe('longjing-2026');
 Run: `npm test -- --run src/api/mock/mockApi.test.ts`  
 Expected: FAIL，mock 服务尚不存在。
 
-- [ ] **Step 4: 实现种子、store 与 U01--U14**
+- [x] **Step 4: 实现种子、store 与 U01--U14**
 
 迁移 `model.ts` 演示数组至 `seed.ts`。公开可见性只由以下条件决定：
 
@@ -138,11 +138,11 @@ const isPublic = (item: TeaItemPublic, sourceActive: boolean) => item.status ===
 
 U11 只有匹配已公开茶品时才返回 `intent: 'brewing'` 与 `tea_item_id`；无法确认时返回 `status: 'unconfirmed'` 且不带茶品 ID。
 
-- [ ] **Step 5: 实现 C01--C13 状态和并发语义**
+- [x] **Step 5: 实现 C01--C13 状态和并发语义**
 
 每次内容修改增加 `row_version` 并返回 `etag: 'rv-' + row_version`；缺 `If-Match` 抛 `PRECONDITION_REQUIRED`，不匹配抛 `VERSION_CONFLICT`。`withdraw`、`relist`、`submit-review`、`review` 与 `delete` 检查角色、作者、状态和来源。
 
-- [ ] **Step 6: 验证并提交**
+- [x] **Step 6: 验证并提交**
 
 Run: `npm test -- --run src/api/mock/mockApi.test.ts && npm run build`  
 Expected: PASS；公开端无草稿、下架、无效来源和联系人原文。
@@ -223,7 +223,7 @@ git commit -m "snapshot(code): add mock and live service switching"
 - Consumes: `PublicApi`、`useRemoteState`、`BrewingPublic`。
 - Produces: 保留路由和视觉的公开远程状态、U11→U07 冲泡加载、U12 脱敏回执。
 
-- [ ] **Step 1: 写问答→冲泡失败测试**
+- [x] **Step 1: 写问答→冲泡失败测试**
 
 ```ts
 const answer = await ask({question: '西湖龙井怎么泡'});
@@ -232,23 +232,23 @@ expect(loadBrewing).toHaveBeenCalledWith({teaId: answer.tea_id, teaItemId: answe
 await expect(ask({question: '没有资料的茶怎么泡'})).resolves.toMatchObject({status: 'unconfirmed'});
 ```
 
-- [ ] **Step 2: 实现公开 hooks**
+- [x] **Step 2: 实现公开 hooks**
 
 目录将 URL `q/category/page` 转为 U02/U04；详情先 U05，再用返回 `tea_id` 调 U06/U07/U08。`BrewGuide` 接收 `BrewingPublic`，四步、计时、临时参数和反馈仍为本地状态。
 
-- [ ] **Step 3: 实现问答和咨询**
+- [x] **Step 3: 实现问答和咨询**
 
 问答生成新 UUID；`unconfirmed` 显示资料不足，`CONTENT_UNAVAILABLE` 清除冲泡并允许刷新。咨询读取 U01 用途文本和版本，未主动同意不调用 U12，成功只显示 API 回执。
 
-- [ ] **Step 4: 替换页面直读演示状态**
+- [x] **Step 4: 替换页面直读演示状态**
 
 `PublicPages.tsx`、`HomeSections.tsx`、`ScrollStory.tsx` 只消费 hooks 的公开 items；七幕第六幕不重置滚动位置。移除公开页面直接调用 `setItems`、`setLeads`、`sourceActive`。
 
-- [ ] **Step 5: 加入可访问状态 UI**
+- [x] **Step 5: 加入可访问状态 UI**
 
 使用既有 `Notice`/`Empty` 处理加载、空集、404、429、503；重试调用 `reload`，错误区设置 `role="alert"`。
 
-- [ ] **Step 6: 验证并提交**
+- [x] **Step 6: 验证并提交**
 
 Run: `npm test -- --run src/features/public && npm run build`  
 Browser: mock 1440×900 验证七幕、`LJ-050`、龙井 3g/85°C/30 秒；390×844 验证无横向溢出、问答与咨询。

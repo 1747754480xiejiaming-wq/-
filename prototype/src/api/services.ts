@@ -6,11 +6,13 @@ export type PublicConfig = { data_mode: 'demo' | 'live'; tea_categories: Array<{
 export type BrewingRecipe = { tea_id: string; tea_item_id?: string; vessel: string; water_ml: number; tea_g: number; temperature_c: number; steps: Array<{ title: string; description: string; seconds?: number }> };
 export type QuestionResult = { status: 'answered' | 'unconfirmed' | 'boundary' | 'degraded'; text: string; intent?: 'brewing'; tea_item_id?: string; tea_id?: string };
 export type InquiryInput = { tea_item_id: string; kind: 'consultation' | 'sample'; contact_channel: 'phone' | 'email'; contact: string; need: string; consent_version: string; consented: boolean };
+export type TeaItemQuery = { tea_id?: string; sku?: string; batch_code?: string; page?: number; page_size?: number };
 
 export interface PublicApi {
   getConfig(): Promise<PublicConfig>;
-  searchTeas(query?: TeaSearch): Promise<Page<Pick<TeaItem, 'id' | 'teaId' | 'name' | 'sku' | 'batch' | 'category'>>>;
-  getTeaItem(id: string): Promise<TeaItemPublic>;
+  searchTeas(query?: TeaSearch): Promise<Page<TeaItem>>;
+  listTeaItems(query?: TeaItemQuery): Promise<Page<TeaItem>>;
+  getTeaItem(id: string): Promise<TeaItem>;
   getBrewing(input: { teaId: string; teaItemId?: string }): Promise<BrewingRecipe>;
   askQuestion(question: string): Promise<QuestionResult>;
   createInquiry(input: InquiryInput): Promise<{ id: string; status: 'new'; submitted_at: string; receipt_message: string }>;

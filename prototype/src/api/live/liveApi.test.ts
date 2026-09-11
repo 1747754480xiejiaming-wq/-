@@ -11,6 +11,11 @@ const fakeClient = () => {
 describe('live API endpoint mapping', () => {
   it('maps brewing identifiers to U07 snake_case parameters', async () => {
     const { client, request } = fakeClient();
+    request.mockResolvedValue({
+      requested: { tea_id: 'tea-1', tea_item_id: 'item-1' },
+      match_level: 'tea_item',
+      record: { tea_id: 'tea-1', tea_item_id: 'item-1', vessel: '盖碗', water_ml: { min: 150, max: 150 }, tea_g: { min: 5, max: 5 }, temperature_c: { min: 90, max: 90 }, steps: [] }
+    });
     const api = createLivePublicApi(client);
 
     await api.getBrewing({ teaId: 'tea-1', teaItemId: 'item-1' });

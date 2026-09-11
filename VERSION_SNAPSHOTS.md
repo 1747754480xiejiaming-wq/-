@@ -20,9 +20,10 @@
 | SNAP-20260911-014 | code | 为桌面七幕增加停滚自动吸附，并将场景改为单幕互斥显示，消除停在页面过渡位置时的文字和插画重影；移动端保留原生邻近吸附 | `npm run build`；1440×900 PageDown 连续验证七个精确停驻点且每次仅一幕可见；390×844 验证七幕文档流、历史深链接和无横向溢出 | 随本次提交推送至 GitHub `main` |
 | SNAP-20260911-015 | code | 将首页竖排滚动提示向左移入正文留白区，修复其与首页操作链接的文字重叠 | `npm run build`；默认桌面及 1440×900 视口检查提示间距、可读性和左侧裁切 | 随本次提交推送至 GitHub `main` |
 | SNAP-20260911-016 | code | 将首页茶图与印章整体向左移入安全区；中等桌面同步缩放，避免与右侧场景进度栏重叠，同时保持与左侧正文的间距 | `npm run build`；714px 与 1440×900 实测图片、印章、正文和进度栏边界，无裁切及横向溢出 | 随本次提交推送至 GitHub `main` |
-| SNAP-20260911-017 | code | 新增 API 运行时、HTTP 客户端、成功/错误信封解析、cookie/CSRF/ETag/幂等头及错误归一化，为 mock/live 联调适配器建立基础 | `npm test -- --run src/api/client.test.ts`（2 项通过）；`npm run build` 通过 | 本地快照待推送 |
-| SNAP-20260911-018 | code | 新增契约化 mock 公开与后台服务，覆盖公开可见性、来源撤回、下架/重新上架、ETag 版本冲突前置条件及核心角色限制 | `npm test -- --run src/api/mock/mockApi.test.ts`（3 项通过）；`npm run build` 通过 | 本地快照待推送 |
-| SNAP-20260911-019 | code | 新增 mock/live 服务工厂、live 公开与后台端点映射、React 服务容器和远程状态 hook；命令透传幂等键、CSRF 与 ETag | `npm test -- src/api/live/liveApi.test.ts src/api/client.test.ts src/api/mock/mockApi.test.ts`（7 项通过）；`npm run build` 通过 | 本地快照待推送 |
+| SNAP-20260911-017 | code | 新增 API 运行时、HTTP 客户端、成功/错误信封解析、cookie/CSRF/ETag/幂等头及错误归一化，为 mock/live 联调适配器建立基础 | `npm test -- --run src/api/client.test.ts`（2 项通过）；`npm run build` 通过 | 已推送至 GitHub `main` |
+| SNAP-20260911-018 | code | 新增契约化 mock 公开与后台服务，覆盖公开可见性、来源撤回、下架/重新上架、ETag 版本冲突前置条件及核心角色限制 | `npm test -- --run src/api/mock/mockApi.test.ts`（3 项通过）；`npm run build` 通过 | 已推送至 GitHub `main` |
+| SNAP-20260911-019 | code | 新增 mock/live 服务工厂、live 公开与后台端点映射、React 服务容器和远程状态 hook；命令透传幂等键、CSRF 与 ETag | `npm test -- src/api/live/liveApi.test.ts src/api/client.test.ts src/api/mock/mockApi.test.ts`（7 项通过）；`npm run build` 通过 | 已推送至 GitHub `main` |
+| SNAP-20260911-020 | code | 公开目录、批次详情、问茶→冲泡和咨询迁移到 mock/live 服务；live 公开端使用严格 snake_case 传输 DTO，并补齐加载、空集、错误与重试状态 | `npm test`（9 项通过）；`npm run build`；Edge Chromium 1440×900 与 390×844 验证检索、3g/85°C/30 秒冲泡、脱敏回执、七幕与无横向溢出，控制台 0 error/0 warning | 随本次提交推送至 GitHub `main` |
 
 ## 回滚方法
 

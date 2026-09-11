@@ -1,7 +1,7 @@
 import type { TeaItem } from '../../model';
 import { ApiError } from '../errors';
-import type { ApiPage, SearchHit, TeaItemPublic, TeaSearch } from '../types';
-import type { BrewingRecipe, InquiryInput, PublicConfig, QuestionResult } from '../services';
+import type { ApiPage, TeaItemPublic, TeaSearch } from '../types';
+import type { BrewingRecipe, InquiryInput, PublicConfig, QuestionResult, TeaItemQuery } from '../services';
 import { MockStore } from './mockStore';
 
 const notFound = () => new ApiError({ status: 404, code: 'NOT_FOUND', message: '内容不存在或当前不可公开' });
@@ -21,7 +21,7 @@ export class MockPublicApi {
   async getConfig(): Promise<PublicConfig> {
     return { data_mode: 'demo', tea_categories: [{ code: 'green', label: '绿茶' }, { code: 'black', label: '红茶' }], inquiry_notice: { version: 'demo-v1', text: '联系方式仅用于本次咨询与样品安排。', purpose: '咨询与样品安排沟通' }, health_notice: { version: 'demo-v1', text: '不提供诊断或治疗建议。' }, capabilities: { qa: true } };
   }
-  async searchTeas(query: TeaSearch = {}): Promise<ApiPage<SearchHit>> {
+  async searchTeas(query: TeaSearch = {}): Promise<ApiPage<TeaItem>> {
     const search = (query.q ?? '').toLowerCase();
     const items = this.published().filter(item =>
       (!query.category || item.category === query.category) &&
@@ -29,7 +29,13 @@ export class MockPublicApi {
     );
     const page = query.page ?? 1;
     const page_size = query.page_size ?? 20;
-    return { items: items.slice((page - 1) * page_size, page * page_size).map(item => ({ id: item.id, teaId: item.teaId, name: item.name, sku: item.sku, batch: item.batch, category: item.category })), page, page_size, total: items.length };
+    return { items: structuredClone(items.slice((page - 1) * page_size, page * page_size)), page, page_size, total: items.length };
+  }
+  async listTeaItems(query: TeaItemQuery = {}): Promise<ApiPage<TeaItem>> {
+    const items = this.published().filter(item => (!query.tea_id || item.teaId === query.tea_id) && (!query.sku || item.sku === query.sku) && (!query.batch_code || item.batch === query.batch_code));
+    const page = query.page ?? 1;
+    const page_size = query.page_size ?? 20;
+    return { items: structuredClone(items.slice((page - 1) * page_size, page * page_size)), page, page_size, total: items.length };
   }
   async getBrewing({ teaId, teaItemId }: { teaId: string; teaItemId?: string }): Promise<BrewingRecipe> {
     const item = this.published().find(value => value.teaId === teaId && (!teaItemId || value.id === teaItemId));
