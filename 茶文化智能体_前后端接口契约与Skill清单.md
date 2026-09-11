@@ -110,7 +110,7 @@ R 必须细分 `review_domains`：`tea_content` 用于茶叶、功效、泡茶�
 | U08 | GET `/teas/{teaId}/supplies` | `tea_item_id?:UUID,page?,page_size?` | `Page<SupplyPublic>` 加 `availability_notice?:string` | 只返回有效授权货源；没有可用货源时空列表加说明，不返回过期价格 |
 | U09 | GET `/sources/{sourceId}` | UUID | `SourcePublic` | 已授权出处标题、摘要和公开附件；仅内部可用的资料不因知道 ID 就可读 |
 | U10 | GET `/files/{fileId}/content` | UUID | 二进制，合法 Content-Type | 每次校验其关联的公开内容和文件披露授权；建议代理传输；不提供永久公开原件链接 |
-| U11 | POST `/questions` | `QuestionCreate` | `AnswerPublic` | 一次请求一次回答，不建聊天历史、WebSocket 或长期会话 |
+| U11 | POST `/questions` | `QuestionCreate` | `AnswerPublic` | 一次请求一次回答；泡法回答返回 `intent=brewing` 和匹配茶品标识，前端随后用 U07 取得完整配方；不建聊天历史、WebSocket 或长期会话 |
 | U12 | POST `/inquiries` | `InquiryCreate` | `{id:UUID,status:new,submitted_at:timestamp,receipt_message:string}` | 样品和咨询共用；响应不回显完整联系方式；不开放匿名查询线索接口 |
 | U13 | POST `/feedback` | `FeedbackCreate` | `{id:UUID,accepted:true}` | 有帮助或无帮助及简短原因；只关联服务器验证过的公开记录/回答 |
 | U14 | POST `/events` | `{events:EventCreate[1..20]}` | `{accepted_count:integer,duplicate_count:integer}` | 仅支持白名单匿名事件；以 event_id 去重；不能接受任意属性字典 |
@@ -282,8 +282,8 @@ I05 必须再次检查引用版本和唯一键；校验后数据发生变化则 
 
 | DTO | 字段 | 校验及处理 |
 |---|---|---|
-| QuestionCreate | `question:string[1..1000],tea_id?:UUID,tea_item_id?:UUID` | tea_item_id 存在时 tea_id 必填且关联一致；不接受 model/system_prompt/source_text 等客户端控制字段 |
-| AnswerPublic | `id:UUID,status:answered或unconfirmed或boundary或degraded,answer:string,citations:[{source:SourceSummary,content_id:UUID,content_revision:integer}],related_tea_ids:UUID[],boundary_notice:string,reason_code?:string,created_at:timestamp` | answered 必须有有效 citations；边界提示可无 citation；不输出模型思考链、内部提示词和完整检索原文 |
+| QuestionCreate | `question:string[1..1000],intent?:general或brewing,tea_id?:UUID,tea_item_id?:UUID` | tea_item_id 存在时 tea_id 必填且关联一致；intent 只表达界面意图，服务端仍须根据问题与证据判断；不接受 model/system_prompt/source_text 等客户端控制字段 |
+| AnswerPublic | `id:UUID,status:answered或unconfirmed或boundary或degraded,answer:string,intent?:general或brewing,tea_id?:UUID,tea_item_id?:UUID,citations:[{source:SourceSummary,content_id:UUID,content_revision:integer}],related_tea_ids:UUID[],boundary_notice:string,reason_code?:string,created_at:timestamp` | answered 必须有有效 citations；`intent=brewing` 时返回的茶品标识必须来自公开检索结果，前端再调用 U07；边界提示可无 citation；不输出模型思考链、内部提示词和完整检索原文 |
 | InquiryCreate | `kind:consultation或sample,tea_id?:UUID,tea_item_id?:UUID,supply_offer_id?:UUID,need:string[1..1000],contact:{channel:phone或email,value:string},consent:{accepted:true,notice_version:string,purpose:inquiry_followup}` | 样品必须 tea_item_id；供应记录必须属于该茶品且当前可用；phone 为 + 和数字共 7 至 15 位数字，email≤254；不收住址、身份证或病史 |
 | FeedbackCreate | `target_type:effect或brewing或answer,target_id:UUID,target_version?:integer,rating:helpful或unhelpful,reason?:string≤500` | effect/brewing 必须版本号；answer 不传版本，且属于本匿名会话；客户端不能随意指定归因 tea_id |
 | EventCreate | `event_id:UUID,event_type:brewing_started或brewing_step_completed或brewing_completed,recipe_id:UUID,recipe_revision:integer,brewing_run_id:UUID,step_no?:integer,occurred_at:timestamp` | step_completed 必须合法 step_no；时间与服务器差值≤24小时；其余属性拒绝；采集值仅为用户自报行为 |
@@ -298,11 +298,10 @@ I05 必须再次检查引用版本和唯一键；校验后数据发生变化则 
 
 | 页面 | 使用接口 | 必须处理的界面状态 |
 |---|---|---|
-| 首页与检索 | U01、U02、U03 | 加载、空结果、错误重试、演示标识、茶类与具体商品结果区分 |
+| 滚动首页与检索 | U01、U02、U03 | 历史与联系为展示内容；茶类数量来自公开数据；加载、空结果、错误重试、演示标识、茶类与具体商品结果区分 |
 | 商品与批次详情 | U04、U05、U06、U08 | 不存在/下线、缺少功效、来源失效、无有效货源 |
 | 功效与出处 | U06、U09、U10、U13 | 通用回退提示、证据层级、来源可见范围、健康边界、反馈成功/失败 |
-| 泡茶引导 | U07、U13、U14 | 分步计时、刷新恢复仅本地、完成反馈、配方版本已变化提示 |
-| 智能问答 | U11 | 生成中、answered、unconfirmed、boundary、degraded、429 与重试 |
+| 问茶与泡茶 | U11、U07、U13、U14 | 生成中、泡法意图与茶品匹配、茶品不明确时选择器、回答后获取完整配方、分步计时、完成反馈、answered、unconfirmed、boundary、degraded、429 与重试 |
 | 咨询和样品 | U01、U12 | 茶品关联、主动同意、字段错误、重复提交、货源失效、告知文本变更 |
 | 登录和权限 | A01—A09 | 未改初始密码、会话失效、无权页面、重新登录 |
 | 内容编辑及审核 | C01—C13、I06—I07 | 草稿置顶、校验失败、审核拒绝、版本冲突、对比、审核自动发布、上下架互斥、免复审重新上架、逻辑删除 |
