@@ -2,7 +2,6 @@ export const publicNavigation = [
   ['首页', '/'],
   ['问茶', '/qa'],
   ['茶叶品类', '/catalog'],
-  ['工作台', '/admin'],
 ] as const;
 
 export const mobilePublicNavigation = [

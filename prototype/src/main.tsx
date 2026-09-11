@@ -51,7 +51,7 @@ return <Context.Provider value={{items,setItems,leads,setLeads,role,setRole,toas
     <header className="site-header"><div className="header-inner">
       <a className="brand" href={url('/')}><span>茶序</span><small>CHA XU</small></a>
       <nav aria-label="主要导航">{publicNavigation.map(([title,target])=><a href={url(target)} key={target} className={active(target)?'active':''} aria-current={active(target)?'page':undefined}>{title}</a>)}</nav>
-      <div className="header-actions"><Badge>交互演示</Badge><Button href="/qa" icon="cup">问茶 · 泡一杯</Button></div>
+      <div className="header-actions"><Badge>交互演示</Badge><Button href="/admin" tone="ghost" icon="users" className="workbench-entry">工作台</Button></div>
     </div></header>
     <main id="main-content" tabIndex={-1} key={hash}>{page}</main>
     <footer className="site-footer container"><div><a className="brand" href={url('/')}><span>茶序</span><small>CHA XU</small></a><p>从一片茶叶，到一杯好茶。</p></div><div><p>产品交互原型 · 所有资料与货源均为演示内容</p><div className="footer-links"><a href={url('/admin')}>工作台登录 <Icon name="arrow" size={13}/></a><button onClick={()=>setShowReset(true)}>重置演示数据</button><a href={url('/?section=references-contact')}>内容与使用边界</a></div></div></footer>

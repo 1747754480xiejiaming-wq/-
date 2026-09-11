@@ -16,7 +16,7 @@ type SceneStyle=CSSProperties&{'--scene-visibility':number;'--scene-offset':numb
 type StoryStyle=CSSProperties&{'--scene-count':number};
 
 const clamp=(value:number,min:number,max:number)=>Math.min(max,Math.max(min,value));
-const targetForSection=(section:string|null):SceneId=>section==='history'?'history-origin':section==='categories'?'categories':section==='references-contact'?'references-contact':'home';
+const targetForSection=(section:string|null):SceneId=>section==='history'?'history-origin-cover':section==='categories'?'categories':section==='references-contact'?'references-contact':'home';
 
 export function ScrollStory({items,onSectionChange}:Props){
   const trackRef=useRef<HTMLDivElement>(null);
@@ -137,7 +137,7 @@ export function ScrollStory({items,onSectionChange}:Props){
           inert={stackedMode?undefined:index!==activeIndex}
         >
           {scene.id==='home'&&<HomeSceneContent/>}
-          {chapterIndex>=0&&chapterIndex<historyChapters.length&&<HistorySceneContent chapter={historyChapters[chapterIndex]} index={chapterIndex}/>}
+          {chapterIndex>=0&&chapterIndex<historyChapters.length&&<HistorySceneContent chapter={historyChapters[chapterIndex]}/>}
           {scene.id==='categories'&&<CategorySceneContent items={items}/>}
           {scene.id==='references-contact'&&<ReferenceContactSceneContent/>}
         </section>

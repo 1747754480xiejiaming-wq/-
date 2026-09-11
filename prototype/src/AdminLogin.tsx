@@ -29,7 +29,10 @@ export function AdminLogin({checking=false,apiEnabled,onLogin}:{checking?:boolea
 
   return <main id="main-content" tabIndex={-1} className="admin-login-shell">
     <section className="admin-login-story">
-      <a className="login-brand" href="#/"><span>茶序</span><small>CHA XU</small></a>
+      <div className="login-story-head">
+        <a className="login-brand" href="#/"><span>茶序</span><small>CHA XU</small></a>
+        <a className="login-return" href="#/"><Icon name="back" size={16}/>返回用户端</a>
+      </div>
       <div className="login-story-copy">
         <div className="eyebrow">FOUR AGENTS / 四岗协作</div>
         <h1>让每一份茶资料，<br/>都经过合适的人。</h1>

@@ -29,6 +29,7 @@
 | SNAP-20260911-023 | code | 新增四智能体后台登录页；四个后端账号统一演示密码；接入 CSRF 登录、Cookie 会话恢复、退出和角色路由，移除前端身份下拉绕过；补充桌面与移动验收截图 | 后端 `pytest -q`：30 passed；API 模式 `npm run build` 通过；Playwright 验证四账号、刷新恢复、退出、1440×900/390×844，控制台 0 error / 0 warning | 已包含于 GitHub `codex/tea-backend-integration` |
 | SNAP-20260911-024 | full | 以后端开发工作区为唯一基线，归档旧前端历史，并同步远程 `main` 与前端开发工作区 | 双工作区提交及关键文件哈希一致；后端测试、API 模式前端构建、远程分支核验通过 | 已推送至 GitHub `main`、`codex/tea-backend-integration`；旧前端历史保存在 `archive/frontend-before-backend-sync-20260911` |
 | SNAP-20260911-025 | code | 在后端统一基线上恢复公共子页面导航：桌面顶部与移动底部改为首页、问茶、茶叶品类、工作台；商品入口连接 `#/catalog`，工作台复用现有 `#/admin` 后端登录页 | `npm run build` 通过；Edge Chromium 验证桌面与 390×844 移动导航、商品总览和工作台登录入口，控制台 0 error / 0 warning | 随本次提交推送至 GitHub `main`、`codex/tea-backend-integration` |
+| SNAP-20260911-026 | code | 将首页茶史四幕扩展为 3 + 3 + 2 的八页完整时间线，总场景增至十一幕；桌面工作台改为右上角低强调按钮并连接 `#/admin`，登录页新增返回用户端入口 | `npm run build` 通过；Edge Chromium 验证 1440×900 十一幕、390×844 八个茶史区块与无横向溢出、工作台进入及返回链路；控制台 0 error / 0 warning | 随本次提交推送至 GitHub `main`、`codex/tea-backend-integration` |
 
 ## 回滚方法
 
