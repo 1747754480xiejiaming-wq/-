@@ -6,12 +6,13 @@ GitHub 仓库：<https://github.com/1747754480xiejiaming-wq/->
 
 版本状态：后端开发工作区现为代码与界面的唯一基线；`main`、`codex/tea-backend-integration` 以及前后端两个开发任务将同步到同一提交。覆盖前的旧前端历史完整保存在 `archive/frontend-before-backend-sync-20260911`，可用于恢复。后续每次代码或画布更新都会同步维护本 README、快照记录并推送。
 
-![茶序用户端首页](output/playwright/18-home-preview.png)
+![茶序用户端首页与新导航](output/playwright/21-public-navigation-desktop.png)
 
 ## 当前进度
 
 - 工作区同步：登录页和管理后台以后端开发任务中的四智能体实现为准，前端开发任务不再保留另一套 `LoginPage`、mock/live service 或后台页面实现。
 - 用户端：首页已升级为七幕沉浸式滚动叙事，依次呈现首页、茶史四章、茶叶品类、参考资料与联系我们；桌面使用 Sticky 原生滚动、滚动停止自动吸附和单幕互斥显示，移动端使用真实文档流和纵向邻近吸附。检索与筛选、茶品和批次档案、功效与资料来源、问茶与分步冲泡联动、货源、咨询和脱敏回执均可交互。
+- 公共导航：桌面顶部与移动底部统一为“首页 / 问茶 / 茶叶品类 / 工作台”；“问茶”进入 `#/qa`，“茶叶品类”进入商品总览 `#/catalog`，“工作台”进入后端认证登录页 `#/admin`。
 - 管理后台：新增真实登录界面，数据运营、客户审核、线索跟进和项目管理四个智能体分别对应 `operator`、`reviewer`、`lead`、`admin` 后端账号；登录态、CSRF 与岗位权限由后端确认。四套职能前端继续独立展示，审核通过自动发布，数据运营和项目管理员可直接上下架商品。
 - 响应式：本轮复核 1440×900 桌面七幕和 390×844 移动端；既有 768、390 和 375 宽度业务页面检查继续有效。
 - UI 细节：主导航活动指示条已居中文字；茶品详情批次选择已统一为米白、深茶绿风格的自定义菜单并支持键盘操作；首页竖排滚动提示已移入正文左侧留白区；首页茶图和印章已向左收进安全区，与右侧场景进度栏保持稳定间距。
@@ -65,7 +66,7 @@ python -m uvicorn app.main:app --port 8000
 打开：
 
 - 用户端：<http://127.0.0.1:4173/>
-- 管理后台：<http://127.0.0.1:4173/#/admin>
+- 工作台登录：<http://127.0.0.1:4173/#/admin>
 
 四个本地演示账号使用统一密码 `TeaDemo2026!`：
 
@@ -89,7 +90,7 @@ npm run build
 2. 查看资料来源和货源状态，体验有效报价与过期报价的差异。
 3. 在“问茶 · 泡一杯”询问“西湖龙井怎么泡”，由回答自动带入茶品、投茶量、水温、时间与四步冲泡流程。
 4. 使用示例内容提交咨询，主动勾选用途同意，查看脱敏回执。
-5. 进入后台，依次退出并登录数据运营、客户审核、线索跟进和项目管理四个智能体，核对各自导航与岗位边界。
+5. 从顶部“工作台”进入后端登录页，依次退出并登录数据运营、客户审核、线索跟进和项目管理四个智能体，核对各自导航与岗位边界。
 6. 体验草稿、审核、发布、下架、免复审重新上架、导入错误、来源撤回和操作记录。
 
 ## 设计与开发资料
@@ -115,7 +116,7 @@ Figma 主文件：[茶序 · 茶文化智能体产品原型](https://www.figma.c
 
 Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71)。本轮 Figma `use_figma` 因 Starter 调用上限受阻，按既定规则改由 Penpot 完成备用画布，并保留回同步清单。
 
-最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-023`。
+最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-025`。
 
 ## 目录结构
 
