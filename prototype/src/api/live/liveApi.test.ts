@@ -42,4 +42,16 @@ describe('live API endpoint mapping', () => {
       idempotencyKey: 'command-1'
     });
   });
+
+  it('maps draft updates and lead transitions to C04 and M03', async () => {
+    const { client, request } = fakeClient();
+    const api = createLiveAdminApi(client, async () => 'csrf-2');
+
+    await api.saveDraft({ id: 'item-2', description: '避光、密封、干燥保存。', ifMatch: 'rv-4', idempotencyKey: 'edit-1' });
+    expect(request).toHaveBeenLastCalledWith({ path: '/admin/content/tea-items/item-2', method: 'PATCH', body: { storage: '避光、密封、干燥保存。' }, csrf: 'csrf-2', ifMatch: 'rv-4', idempotencyKey: 'edit-1' });
+
+    request.mockResolvedValue({ id: 'lead-1', kind: 'sample', status: 'contacted', contact_masked: '138****0001', created_at: '2026-09-11T00:00:00Z', updated_at: '2026-09-11T01:00:00Z', row_version: 2, need: '样品', notes: [] });
+    await api.updateLead({ id: 'lead-1', status: 'contacted', note: '已联系', ifMatch: 'rv-1', idempotencyKey: 'lead-1' });
+    expect(request).toHaveBeenLastCalledWith({ path: '/admin/inquiries/lead-1', method: 'PATCH', body: { status: 'contacted', note: '已联系' }, csrf: 'csrf-2', ifMatch: 'rv-1', idempotencyKey: 'lead-1' });
+  });
 });

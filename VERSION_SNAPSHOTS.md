@@ -24,6 +24,7 @@
 | SNAP-20260911-018 | code | 新增契约化 mock 公开与后台服务，覆盖公开可见性、来源撤回、下架/重新上架、ETag 版本冲突前置条件及核心角色限制 | `npm test -- --run src/api/mock/mockApi.test.ts`（3 项通过）；`npm run build` 通过 | 已推送至 GitHub `main` |
 | SNAP-20260911-019 | code | 新增 mock/live 服务工厂、live 公开与后台端点映射、React 服务容器和远程状态 hook；命令透传幂等键、CSRF 与 ETag | `npm test -- src/api/live/liveApi.test.ts src/api/client.test.ts src/api/mock/mockApi.test.ts`（7 项通过）；`npm run build` 通过 | 已推送至 GitHub `main` |
 | SNAP-20260911-020 | code | 公开目录、批次详情、问茶→冲泡和咨询迁移到 mock/live 服务；live 公开端使用严格 snake_case 传输 DTO，并补齐加载、空集、错误与重试状态 | `npm test`（9 项通过）；`npm run build`；Edge Chromium 1440×900 与 390×844 验证检索、3g/85°C/30 秒冲泡、脱敏回执、七幕与无横向溢出，控制台 0 error/0 warning | 随本次提交推送至 GitHub `main` |
+| SNAP-20260911-021 | code | 四套后台迁移到会话/权限、内容、审核、来源与线索服务；写操作携带 CSRF/ETag/幂等键，补齐 403/409/422/428/429/503 状态并移除直接 setter 实现 | `npm test`（13 项通过）；`npm run build`；Edge Chromium 验证 O 下架与公开阻断、R 审核自动发布、L 跟进、A 来源撤回→下架→重新上架恢复，控制台 0 error/0 warning | 随本次提交推送至 GitHub `main` |
 
 ## 回滚方法
 

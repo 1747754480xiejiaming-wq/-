@@ -274,7 +274,7 @@ git commit -m "snapshot(code): connect public flows to API services"
 - Consumes: `AdminApi`、`permission_codes`、`review_domains`、ETag 和 `row_version`。
 - Produces: 后台会话状态、权限门、带 CSRF/ETag/幂等键的内容命令。
 
-- [ ] **Step 1: 写权限与命令失败测试**
+- [x] **Step 1: 写权限与命令失败测试**
 
 ```tsx
 render(<PermissionGate required={['content:write']} fallback={<span>无权</span>}><button>新建草稿</button></PermissionGate>);
@@ -284,23 +284,23 @@ await expect(withdraw({id: 'tea-item-1', etag: 'rv-1'})).rejects.toMatchObject({
 
 测试 O 草稿删除、R 自审阻断、L 无内容入口、A 无专家审核权限及 409 冲突。
 
-- [ ] **Step 2: 实现后台会话和权限门**
+- [x] **Step 2: 实现后台会话和权限门**
 
 live 调 A03，写前调 A01；mock 保留演示身份切换，但每个身份映射精确权限和审核领域。`PermissionGate` 隐藏入口、阻止提交并说明职能边界。
 
-- [ ] **Step 3: 实现内容、审核和线索 hooks**
+- [x] **Step 3: 实现内容、审核和线索 hooks**
 
 `useContent` 调 C01--C13，保留响应 `row_version`/ETag。下架、重新上架、删除、提交审核和审核各用新幂等键；409 显示刷新提示。`useLeads` 只为授权角色请求和脱敏导出。
 
-- [ ] **Step 4: 迁移 `AdminPages.tsx` setter**
+- [x] **Step 4: 迁移 `AdminPages.tsx` setter**
 
 移除页面直接 `setItems`、`setLeads`、`setSourceActive`。保留草稿置顶、审核即发布、状态互斥与来源恢复文案，以服务返回的状态刷新列表。
 
-- [ ] **Step 5: 处理后台错误状态**
+- [x] **Step 5: 处理后台错误状态**
 
 401 清理会话；403 只显示无权；422 展示字段 details；428 提示刷新；429 展示秒数；503 展示重试。live 不伪造导入或下载成功。
 
-- [ ] **Step 6: 验证并提交**
+- [x] **Step 6: 验证并提交**
 
 Run: `npm test -- --run src/features/admin && npm run build`  
 Browser: 验证 O 下架、R 审核发布、L 跟进、A 上下架/删除与“来源撤回→重新上架→公开恢复”。

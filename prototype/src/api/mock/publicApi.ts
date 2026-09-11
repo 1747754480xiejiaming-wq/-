@@ -55,7 +55,7 @@ export class MockPublicApi {
     if (!input.consented) throw new ApiError({ status: 422, code: 'CONSENT_REQUIRED', message: '请先阅读并同意用途说明', details: [{ field: 'consented', reason: 'required' }] });
     const item = await this.getTeaItem(input.tea_item_id);
     const id = `CX-DEMO-${Date.now()}`;
-    this.store.update(state => ({ ...state, leads: [{ id, name: '本次演示访客', contact: input.contact.includes('@') ? `${input.contact.slice(0, 1)}***@${input.contact.split('@')[1]}` : `${input.contact.slice(0, 3)}****${input.contact.slice(-4)}`, item: `${item.name} · ${item.batch}`, kind: input.kind === 'sample' ? '样品申请' : '茶品咨询', status: 'new', date: new Date().toLocaleString('zh-CN'), note: input.need }, ...state.leads] }));
+    this.store.update(state => ({ ...state, leads: [{ id, name: '本次演示访客', contact: input.contact.includes('@') ? `${input.contact.slice(0, 1)}***@${input.contact.split('@')[1]}` : `${input.contact.slice(0, 3)}****${input.contact.slice(-4)}`, item: `${item.name} · ${item.batch}`, kind: input.kind === 'sample' ? '样品申请' : '茶品咨询', status: 'new', date: new Date().toLocaleString('zh-CN'), note: input.need }, ...state.leads], leadVersions: { ...state.leadVersions, [id]: 1 } }));
     return { id, status: 'new' as const, submitted_at: new Date().toISOString(), receipt_message: '需求已记录，后续将由工作人员跟进。' };
   }
   async isSourceActive() { return this.store.snapshot().sourceActive; }

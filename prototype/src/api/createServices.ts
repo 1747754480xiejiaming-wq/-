@@ -9,7 +9,7 @@ export type AppServices = { publicApi: PublicApi; adminApi: AdminApi; mode: Runt
 
 export const createServices = (config: RuntimeConfig): AppServices => {
   if (config.mode === 'mock') {
-    const mock = createMockServices();
+    const mock = createMockServices({ role: 'operator', userId: 'operator-1' });
     return { publicApi: mock.publicApi, adminApi: mock.admin, mode: 'mock' };
   }
   const client = new ApiClient({ baseUrl: config.baseUrl });

@@ -1,5 +1,5 @@
 import type { Lead, TeaItem } from '../model';
-import type { ContentCommand, ContentDetail, ContentQuery, ContentSummary, ReviewCommand, TeaSearch, TeaItemPublic } from './types';
+import type { AdminUser, ContentCommand, ContentCreate, ContentDetail, ContentEditCommand, ContentQuery, ContentSummary, ExportJob, LeadCommand, LeadDetail, LeadQuery, ReviewCommand, SubmitReviewCommand, TeaSearch } from './types';
 import type { Page } from './contracts';
 
 export type PublicConfig = { data_mode: 'demo' | 'live'; tea_categories: Array<{ code: string; label: string }>; inquiry_notice: { version: string; text: string; purpose: string }; health_notice: { version: string; text: string }; capabilities: { qa: boolean } };
@@ -19,11 +19,21 @@ export interface PublicApi {
 }
 
 export interface AdminApi {
-  getMe(): Promise<{ id: string; role: string; permission_codes: string[]; review_domains: string[] }>;
+  getMe(): Promise<AdminUser>;
+  setDemoRole(role: import('../model').Role): Promise<AdminUser>;
   getContent(id: string): Promise<ContentDetail<TeaItem>>;
   listContent(query?: ContentQuery): Promise<Page<ContentSummary>>;
+  createDraft(input: ContentCreate): Promise<ContentDetail<TeaItem>>;
+  saveDraft(input: ContentEditCommand): Promise<ContentDetail<TeaItem>>;
+  submitReview(input: SubmitReviewCommand): Promise<ContentDetail<TeaItem>>;
   withdraw(input: ContentCommand): Promise<ContentDetail<TeaItem>>;
   relist(input: ContentCommand): Promise<ContentDetail<TeaItem>>;
   delete(input: ContentCommand): Promise<void>;
   review(input: ReviewCommand): Promise<ContentDetail<TeaItem>>;
+  getSourceActive(): Promise<boolean>;
+  setSourceActive(active: boolean): Promise<void>;
+  listLeads(query?: LeadQuery): Promise<Page<LeadDetail>>;
+  updateLead(input: LeadCommand): Promise<LeadDetail>;
+  exportLeads(query?: LeadQuery): Promise<ExportJob>;
+  resetDemo(): Promise<void>;
 }
