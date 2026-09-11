@@ -33,7 +33,7 @@
 - Consumes: local commits `8c0ca11` and `172103d`, remote `origin/main`
 - Produces: verified preflight state and remote/local recovery branch `archive/frontend-before-backend-sync-20260911`
 
-- [ ] **Step 1: Fetch only the remote refs needed for the safety check**
+- [x] **Step 1: Fetch only the remote refs needed for the safety check**
 
 ```powershell
 git fetch origin main codex/tea-backend-integration
@@ -41,7 +41,7 @@ git fetch origin main codex/tea-backend-integration
 
 Expected: exit code 0; no local worktree files change.
 
-- [ ] **Step 2: Verify both worktrees are clean and identify their exact commits**
+- [x] **Step 2: Verify both worktrees are clean and identify their exact commits**
 
 ```powershell
 $canonicalTree = 'C:\Users\17477\.codex\worktrees\b2de\茶文化智能体'
@@ -55,7 +55,7 @@ git -C $canonicalTree rev-parse origin/main
 
 Expected: both status outputs are empty; frontend HEAD and `origin/main` both equal `172103d134d8470af2de1ae2692c2342e2e53319`. Stop on any mismatch.
 
-- [ ] **Step 3: Create a local recovery branch without switching either worktree**
+- [x] **Step 3: Create a local recovery branch without switching either worktree**
 
 ```powershell
 git branch archive/frontend-before-backend-sync-20260911 172103d134d8470af2de1ae2692c2342e2e53319
@@ -64,7 +64,7 @@ git rev-parse archive/frontend-before-backend-sync-20260911
 
 Expected: the branch resolves exactly to `172103d134d8470af2de1ae2692c2342e2e53319`. If it already exists, verify it points there and do not move it.
 
-- [ ] **Step 4: Push and verify the recovery branch before any overwrite**
+- [x] **Step 4: Push and verify the recovery branch before any overwrite**
 
 ```powershell
 git push origin archive/frontend-before-backend-sync-20260911:archive/frontend-before-backend-sync-20260911
@@ -73,7 +73,7 @@ git ls-remote --heads origin archive/frontend-before-backend-sync-20260911
 
 Expected: remote output begins with `172103d134d8470af2de1ae2692c2342e2e53319`.
 
-- [ ] **Step 5: Record the archive checkpoint in the plan**
+- [x] **Step 5: Record the archive checkpoint in the plan**
 
 Mark Task 1 complete only after the remote archive hash is verified. Do not update `main` during this task.
 
@@ -92,11 +92,11 @@ Mark Task 1 complete only after the remote archive hash is verified. Do not upda
 - Consumes: verified recovery branch from Task 1
 - Produces: one clean canonical commit containing the synchronization record and all already-verified backend/login UI work
 
-- [ ] **Step 1: Add the canonical-baseline status to README**
+- [x] **Step 1: Add the canonical-baseline status to README**
 
 Add a short status item stating that the backend-development implementation is the sole code/UI baseline for `main` and both development tasks, and that the former frontend line is recoverable from `archive/frontend-before-backend-sync-20260911`.
 
-- [ ] **Step 2: Add snapshot `SNAP-20260911-024`**
+- [x] **Step 2: Add snapshot `SNAP-20260911-024`**
 
 Append a `VERSION_SNAPSHOTS.md` row with:
 
@@ -104,7 +104,7 @@ Append a `VERSION_SNAPSHOTS.md` row with:
 | SNAP-20260911-024 | full | 以后端开发工作区为唯一基线，归档旧前端历史，并同步远程 main 与前端开发工作区 | 双工作区提交及关键文件哈希一致；后端测试、API 模式前端构建、远程分支核验通过 | 已推送至 GitHub `main`、`codex/tea-backend-integration`；旧前端历史保存在 `archive/frontend-before-backend-sync-20260911` |
 ```
 
-- [ ] **Step 3: Run the backend test suite**
+- [x] **Step 3: Run the backend test suite**
 
 ```powershell
 Set-Location backend
@@ -113,7 +113,7 @@ python -m pytest -q
 
 Expected: 30 tests pass; only the already-known dependency deprecation warnings are allowed.
 
-- [ ] **Step 4: Run the frontend build against the local API base**
+- [x] **Step 4: Run the frontend build against the local API base**
 
 ```powershell
 Set-Location prototype
@@ -123,7 +123,7 @@ npm run build
 
 Expected: TypeScript checking and Vite production build complete with exit code 0.
 
-- [ ] **Step 5: Check documentation and repository differences**
+- [x] **Step 5: Check documentation and repository differences**
 
 ```powershell
 git diff --check
@@ -132,7 +132,7 @@ git status --short
 
 Expected: only `README.md`, `VERSION_SNAPSHOTS.md`, and this plan are modified; no whitespace errors.
 
-- [ ] **Step 6: Commit the canonical synchronization snapshot**
+- [x] **Step 6: Commit the canonical synchronization snapshot**
 
 ```powershell
 git add -- README.md VERSION_SNAPSHOTS.md docs/superpowers/plans/2026-09-11-backend-canonical-workspace-sync.md
