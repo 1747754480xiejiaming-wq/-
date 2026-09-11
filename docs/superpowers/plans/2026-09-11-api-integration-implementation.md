@@ -168,7 +168,7 @@ git commit -m "snapshot(code): add contract-aligned mock API"
 - Consumes: `ApiClient`、`PublicApi`、`AdminApi`。
 - Produces: `createServices(config)`、`useAppServices()` 和 `{status,data,error,reload}` 远程状态。
 
-- [ ] **Step 1: 写端点映射失败测试**
+- [x] **Step 1: 写端点映射失败测试**
 
 ```ts
 await publicApi.getBrewing({teaId: 'tea-1', teaItemId: 'item-1'});
@@ -177,16 +177,16 @@ await adminApi.review({id: 'item-1', revision: 3, decision: 'approve', comment: 
 expect(request).toHaveBeenCalledWith(expect.objectContaining({path: '/admin/content/tea-items/item-1/review', method: 'POST', ifMatch: 'rv-3'}));
 ```
 
-- [ ] **Step 2: 确认测试失败**
+- [x] **Step 2: 确认测试失败**
 
 Run: `npm test -- --run src/api/live/liveApi.test.ts`  
 Expected: FAIL，live 适配器不存在。
 
-- [ ] **Step 3: 实现 live 适配器与服务工厂**
+- [x] **Step 3: 实现 live 适配器与服务工厂**
 
 每个方法逐字映射契约路径和 snake_case 请求。`createServices` 按 `RuntimeConfig.mode` 返回 mock 或 live；live 后台以 A01 获取内存 CSRF token，收到 401 后清除 token 与用户状态。
 
-- [ ] **Step 4: 实现 Context 与远程状态 hook**
+- [x] **Step 4: 实现 Context 与远程状态 hook**
 
 ```tsx
 export function useRemoteState<T>(load: () => Promise<T>) {
@@ -196,7 +196,7 @@ export function useRemoteState<T>(load: () => Promise<T>) {
 
 `main.tsx` 创建一次 services 并包裹既有 hash 路由，不改变 URL 行为。
 
-- [ ] **Step 5: 验证并提交**
+- [x] **Step 5: 验证并提交**
 
 Run: `npm test -- --run src/api/live/liveApi.test.ts && npm run build`  
 Expected: PASS；mock 模式不发 HTTP，live 模式不读种子。

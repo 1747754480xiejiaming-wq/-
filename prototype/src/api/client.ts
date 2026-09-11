@@ -10,6 +10,7 @@ export type RequestInput = {
   csrf?: string;
   ifMatch?: string;
   idempotent?: boolean;
+  idempotencyKey?: string;
 };
 
 export type ApiClientOptions = { baseUrl: string; fetcher?: typeof fetch };
@@ -51,7 +52,8 @@ export class ApiClient {
     if (input.body !== undefined) headers.set('Content-Type', 'application/json');
     if (input.csrf) headers.set('X-CSRF-Token', input.csrf);
     if (input.ifMatch) headers.set('If-Match', input.ifMatch);
-    if (input.idempotent) headers.set('Idempotency-Key', newIdempotencyKey());
+    if (input.idempotencyKey) headers.set('Idempotency-Key', input.idempotencyKey);
+    else if (input.idempotent) headers.set('Idempotency-Key', newIdempotencyKey());
 
     let response: Response;
     try {

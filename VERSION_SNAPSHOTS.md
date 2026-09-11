@@ -22,6 +22,7 @@
 | SNAP-20260911-016 | code | 将首页茶图与印章整体向左移入安全区；中等桌面同步缩放，避免与右侧场景进度栏重叠，同时保持与左侧正文的间距 | `npm run build`；714px 与 1440×900 实测图片、印章、正文和进度栏边界，无裁切及横向溢出 | 随本次提交推送至 GitHub `main` |
 | SNAP-20260911-017 | code | 新增 API 运行时、HTTP 客户端、成功/错误信封解析、cookie/CSRF/ETag/幂等头及错误归一化，为 mock/live 联调适配器建立基础 | `npm test -- --run src/api/client.test.ts`（2 项通过）；`npm run build` 通过 | 本地快照待推送 |
 | SNAP-20260911-018 | code | 新增契约化 mock 公开与后台服务，覆盖公开可见性、来源撤回、下架/重新上架、ETag 版本冲突前置条件及核心角色限制 | `npm test -- --run src/api/mock/mockApi.test.ts`（3 项通过）；`npm run build` 通过 | 本地快照待推送 |
+| SNAP-20260911-019 | code | 新增 mock/live 服务工厂、live 公开与后台端点映射、React 服务容器和远程状态 hook；命令透传幂等键、CSRF 与 ETag | `npm test -- src/api/live/liveApi.test.ts src/api/client.test.ts src/api/mock/mockApi.test.ts`（7 项通过）；`npm run build` 通过 | 本地快照待推送 |
 
 ## 回滚方法
 
