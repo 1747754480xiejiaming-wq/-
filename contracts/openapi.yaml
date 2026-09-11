@@ -59,6 +59,317 @@ paths:
                   server_time: '2026-09-11T00:00:00Z'
         '500':
           $ref: '#/components/responses/InternalError'
+  /health/ready:
+    get:
+      operationId: getReadyHealth
+      summary: Check database readiness
+      responses:
+        '200': {description: Database is reachable}
+        '503': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/teas:
+    get:
+      operationId: listTeas
+      summary: Search published teas and tea items
+      parameters:
+        - {name: q, in: query, schema: {type: string, maxLength: 100}}
+        - {name: category, in: query, schema: {type: string}}
+        - {name: entity_type, in: query, schema: {type: string, enum: [tea, tea_item]}}
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/PageSize'}
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+        '422': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/teas/{tea_id}:
+    get:
+      operationId: getTea
+      parameters: [{$ref: '#/components/parameters/TeaId'}]
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+        '404': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/tea-items:
+    get:
+      operationId: listTeaItems
+      parameters:
+        - {name: tea_id, in: query, schema: {type: string, format: uuid}}
+        - {name: sku, in: query, schema: {type: string, maxLength: 64}}
+        - {name: batch_code, in: query, schema: {type: string, maxLength: 64}}
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/PageSize'}
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+  /api/v1/tea-items/{tea_item_id}:
+    get:
+      operationId: getTeaItem
+      parameters: [{$ref: '#/components/parameters/TeaItemId'}]
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+        '404': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/teas/{tea_id}/effects:
+    get:
+      operationId: getTeaEffects
+      parameters:
+        - {$ref: '#/components/parameters/TeaId'}
+        - {name: tea_item_id, in: query, schema: {type: string, format: uuid}}
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+        '422': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/teas/{tea_id}/brewing:
+    get:
+      operationId: getTeaBrewing
+      parameters:
+        - {$ref: '#/components/parameters/TeaId'}
+        - {name: tea_item_id, in: query, schema: {type: string, format: uuid}}
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+        '422': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/teas/{tea_id}/supplies:
+    get:
+      operationId: listTeaSupplies
+      parameters:
+        - {$ref: '#/components/parameters/TeaId'}
+        - {name: tea_item_id, in: query, schema: {type: string, format: uuid}}
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/PageSize'}
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+  /api/v1/sources/{source_id}:
+    get:
+      operationId: getPublicSource
+      parameters: [{name: source_id, in: path, required: true, schema: {type: string, format: uuid}}]
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+        '404': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/files/{file_id}/content:
+    get:
+      operationId: getPublicFile
+      parameters: [{name: file_id, in: path, required: true, schema: {type: string, format: uuid}}]
+      responses:
+        '200': {description: Authorized binary file}
+        '503': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/questions:
+    post:
+      operationId: createQuestion
+      security: []
+      parameters: [{$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/QuestionCreate'}}}
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+        '409': {$ref: '#/components/responses/ApiFailure'}
+        '422': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/inquiries:
+    post:
+      operationId: createInquiry
+      security: []
+      parameters: [{$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/InquiryCreate'}}}
+      responses:
+        '201': {$ref: '#/components/responses/ApiSuccess'}
+        '409': {$ref: '#/components/responses/ApiFailure'}
+        '422': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/feedback:
+    post:
+      operationId: createFeedback
+      security: []
+      parameters: [{$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/FeedbackCreate'}}}}
+      responses: {'201': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/events:
+    post:
+      operationId: createEvents
+      security: []
+      parameters: [{$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/EventBatchCreate'}}}}
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/auth/csrf:
+    get:
+      operationId: getAdminCsrf
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/auth/login:
+    post:
+      operationId: loginAdmin
+      parameters: [{$ref: '#/components/parameters/CsrfToken'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/LoginCreate'}}}}
+      responses:
+        '200': {$ref: '#/components/responses/ApiSuccess'}
+        '401': {$ref: '#/components/responses/ApiFailure'}
+        '403': {$ref: '#/components/responses/ApiFailure'}
+  /api/v1/admin/auth/me:
+    get:
+      operationId: getCurrentAdmin
+      security: [{AdminSessionCookie: []}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}, '401': {$ref: '#/components/responses/ApiFailure'}}
+  /api/v1/admin/auth/logout:
+    post:
+      operationId: logoutAdmin
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/CsrfToken'}]
+      responses: {'204': {description: Session revoked}, '403': {$ref: '#/components/responses/ApiFailure'}}
+  /api/v1/admin/auth/password:
+    patch:
+      operationId: changeAdminPassword
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/CsrfToken'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/users:
+    get:
+      operationId: listAdminUsers
+      security: [{AdminSessionCookie: []}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+    post:
+      operationId: createAdminUser
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'201': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/users/{user_id}:
+    patch:
+      operationId: patchAdminUser
+      security: [{AdminSessionCookie: []}]
+      parameters:
+        - {name: user_id, in: path, required: true, schema: {type: string, format: uuid}}
+        - {$ref: '#/components/parameters/CsrfToken'}
+        - {$ref: '#/components/parameters/IfMatch'}
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}, '409': {$ref: '#/components/responses/ApiFailure'}, '428': {$ref: '#/components/responses/ApiFailure'}}
+  /api/v1/admin/users/{user_id}/password-reset:
+    post:
+      operationId: resetAdminPassword
+      security: [{AdminSessionCookie: []}]
+      parameters:
+        - {name: user_id, in: path, required: true, schema: {type: string, format: uuid}}
+        - {$ref: '#/components/parameters/CsrfToken'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/content/{resource}:
+    get:
+      operationId: listAdminContent
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/Page'}, {$ref: '#/components/parameters/PageSize'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+    post:
+      operationId: createAdminContent
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/ContentPayload'}}}}
+      responses: {'201': {$ref: '#/components/responses/ApiSuccess'}, '422': {$ref: '#/components/responses/ApiFailure'}}
+  /api/v1/admin/content/{resource}/{content_id}:
+    get:
+      operationId: getAdminContent
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+    patch:
+      operationId: patchAdminContent
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IfMatch'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}, '409': {$ref: '#/components/responses/ApiFailure'}, '428': {$ref: '#/components/responses/ApiFailure'}}
+  /api/v1/admin/content/{resource}/{content_id}/versions:
+    get:
+      operationId: listContentVersions
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/content/{resource}/{content_id}/diff:
+    get:
+      operationId: diffContentVersions
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/content/{resource}/{content_id}/revisions:
+    post:
+      operationId: createContentRevision
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IfMatch'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'201': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/content/{resource}/{content_id}/submit-review:
+    post:
+      operationId: submitContentReview
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IfMatch'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/content/{resource}/{content_id}/review:
+    post:
+      operationId: reviewContent
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IfMatch'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/content/{resource}/{content_id}/withdraw:
+    post:
+      operationId: withdrawContent
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IfMatch'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/content/{resource}/{content_id}/relist:
+    post:
+      operationId: relistContent
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {$ref: '#/components/parameters/ContentId'}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IfMatch'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/content/tea-items/{content_id}:
+    delete:
+      operationId: deleteTeaItem
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/ContentId'}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IfMatch'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'204': {description: Logically deleted}}
+  /api/v1/admin/reviews:
+    get:
+      operationId: listReviews
+      security: [{AdminSessionCookie: []}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/import-templates/{resource}:
+    get:
+      operationId: getImportTemplate
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/Resource'}, {name: format, in: query, required: true, schema: {type: string, enum: [csv, xlsx]}}]
+      responses: {'200': {description: Import template file}, '503': {$ref: '#/components/responses/ApiFailure'}}
+  /api/v1/admin/imports:
+    post:
+      operationId: createImport
+      security: [{AdminSessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody: {required: true, content: {multipart/form-data: {schema: {type: object, required: [file, resource, schema_version], properties: {file: {type: string, format: binary}, resource: {type: string}, schema_version: {type: string}}}}}}
+      responses: {'202': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/imports/{import_id}:
+    get:
+      operationId: getImport
+      security: [{AdminSessionCookie: []}]
+      parameters: [{name: import_id, in: path, required: true, schema: {type: string, format: uuid}}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/imports/{import_id}/errors:
+    get:
+      operationId: listImportErrors
+      security: [{AdminSessionCookie: []}]
+      parameters: [{name: import_id, in: path, required: true, schema: {type: string, format: uuid}}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/imports/{import_id}/commit:
+    post:
+      operationId: commitImport
+      security: [{AdminSessionCookie: []}]
+      parameters: [{name: import_id, in: path, required: true, schema: {type: string, format: uuid}}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'202': {$ref: '#/components/responses/ApiSuccess'}, '409': {$ref: '#/components/responses/ApiFailure'}}
+  /api/v1/admin/inquiries:
+    get:
+      operationId: listInquiries
+      security: [{AdminSessionCookie: []}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+  /api/v1/admin/inquiries/{inquiry_id}:
+    get:
+      operationId: getInquiry
+      security: [{AdminSessionCookie: []}]
+      parameters: [{name: inquiry_id, in: path, required: true, schema: {type: string, format: uuid}}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}}
+    patch:
+      operationId: patchInquiry
+      security: [{AdminSessionCookie: []}]
+      parameters: [{name: inquiry_id, in: path, required: true, schema: {type: string, format: uuid}}, {$ref: '#/components/parameters/CsrfToken'}, {$ref: '#/components/parameters/IfMatch'}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}, '409': {$ref: '#/components/responses/ApiFailure'}}
+  /api/v1/admin/audit-logs:
+    get:
+      operationId: listAuditLogs
+      security: [{AdminSessionCookie: []}]
+      responses: {'200': {$ref: '#/components/responses/ApiSuccess'}, '403': {$ref: '#/components/responses/ApiFailure'}}
 components:
   securitySchemes:
     AdminSessionCookie:
@@ -90,6 +401,39 @@ components:
       schema:
         type: string
         format: uuid
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      schema: {type: string, pattern: '^"rv-[1-9][0-9]*"$'}
+    Page:
+      name: page
+      in: query
+      schema: {type: integer, minimum: 1, default: 1}
+    PageSize:
+      name: page_size
+      in: query
+      schema: {type: integer, minimum: 1, maximum: 100, default: 20}
+    TeaId:
+      name: tea_id
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    TeaItemId:
+      name: tea_item_id
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    ContentId:
+      name: content_id
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    Resource:
+      name: resource
+      in: path
+      required: true
+      schema: {type: string, enum: [teas, tea-items, effects, brewing-recipes, suppliers, supply-offers, sources]}
   headers:
     RequestId:
       description: Server-assigned request correlation UUID.
@@ -97,6 +441,16 @@ components:
         type: string
         format: uuid
   responses:
+    ApiSuccess:
+      description: Standard success envelope; operation-specific data is defined by the prose contract.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/SuccessObject'}
+    ApiFailure:
+      description: Standard failure envelope; clients branch on error.code.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorResponse'}
     InternalError:
       description: An unexpected error in the standard failure envelope.
       content:
@@ -104,6 +458,82 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    SuccessObject:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data: {type: object}
+        meta: {$ref: '#/components/schemas/ResponseMeta'}
+    LoginCreate:
+      type: object
+      additionalProperties: false
+      required: [username, password]
+      properties:
+        username: {type: string, minLength: 1, maxLength: 64}
+        password: {type: string, minLength: 1, maxLength: 128}
+    QuestionCreate:
+      type: object
+      additionalProperties: false
+      required: [question]
+      properties:
+        question: {type: string, minLength: 1, maxLength: 1000}
+        intent: {type: [string, 'null'], enum: [general, brewing, null]}
+        tea_id: {type: [string, 'null'], format: uuid}
+        tea_item_id: {type: [string, 'null'], format: uuid}
+    InquiryCreate:
+      type: object
+      additionalProperties: false
+      required: [kind, need, contact, consent]
+      properties:
+        kind: {type: string, enum: [consultation, sample]}
+        tea_id: {type: [string, 'null'], format: uuid}
+        tea_item_id: {type: [string, 'null'], format: uuid}
+        supply_offer_id: {type: [string, 'null'], format: uuid}
+        need: {type: string, minLength: 1, maxLength: 1000}
+        contact:
+          type: object
+          additionalProperties: false
+          required: [channel, value]
+          properties: {channel: {type: string, enum: [phone, email]}, value: {type: string, maxLength: 254}}
+        consent:
+          type: object
+          additionalProperties: false
+          required: [accepted, notice_version, purpose]
+          properties: {accepted: {const: true}, notice_version: {type: string}, purpose: {const: inquiry_followup}}
+    FeedbackCreate:
+      type: object
+      additionalProperties: false
+      required: [target_type, target_id, rating]
+      properties:
+        target_type: {type: string, enum: [effect, brewing, answer]}
+        target_id: {type: string, format: uuid}
+        target_version: {type: [integer, 'null'], minimum: 1}
+        rating: {type: string, enum: [helpful, unhelpful]}
+        reason: {type: [string, 'null'], maxLength: 500}
+    EventBatchCreate:
+      type: object
+      additionalProperties: false
+      required: [events]
+      properties:
+        events: {type: array, minItems: 1, maxItems: 20, items: {type: object}}
+    ContentPayload:
+      description: One of seven resource-specific payloads; exact required fields are fixed in section 4.2 of the prose contract.
+      oneOf:
+        - {$ref: '#/components/schemas/TeaPayload'}
+        - {$ref: '#/components/schemas/TeaItemPayload'}
+        - {$ref: '#/components/schemas/EffectPayload'}
+        - {$ref: '#/components/schemas/BrewingPayload'}
+        - {$ref: '#/components/schemas/SupplierPayload'}
+        - {$ref: '#/components/schemas/SupplyOfferPayload'}
+        - {$ref: '#/components/schemas/SourcePayload'}
+    TeaPayload: {type: object, additionalProperties: false, required: [name, category], properties: {name: {type: string}, category: {type: string}, aliases: {type: array, items: {type: string}}, origin: {type: string}, process: {type: string}, source_ids: {type: array, items: {type: string, format: uuid}}}}
+    TeaItemPayload: {type: object, additionalProperties: false, required: [tea_id, sku, batch_code, name, year], properties: {tea_id: {type: string, format: uuid}, sku: {type: string}, batch_code: {type: string}, name: {type: string}, year: {type: integer}, grade: {type: string}, specification: {type: string}, storage: {type: string}, source_ids: {type: array, items: {type: string, format: uuid}}}}
+    EffectPayload: {type: object, additionalProperties: true, required: [tea_id], properties: {tea_id: {type: string, format: uuid}, tea_item_id: {type: [string, 'null'], format: uuid}}}
+    BrewingPayload: {type: object, additionalProperties: true, required: [tea_id, title], properties: {tea_id: {type: string, format: uuid}, tea_item_id: {type: [string, 'null'], format: uuid}, title: {type: string}}}
+    SupplierPayload: {type: object, additionalProperties: true, required: [name], properties: {name: {type: string}}}
+    SupplyOfferPayload: {type: object, additionalProperties: true, required: [tea_item_id, supplier_id], properties: {tea_item_id: {type: string, format: uuid}, supplier_id: {type: string, format: uuid}}}
+    SourcePayload: {type: object, additionalProperties: true, required: [type, title], properties: {type: {type: string}, title: {type: string}}}
     LiveHealth:
       type: object
       additionalProperties: false

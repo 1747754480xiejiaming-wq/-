@@ -1,38 +1,23 @@
-from datetime import datetime, timezone
 from typing import Annotated
 from uuid import UUID, uuid4
 
-from fastapi import FastAPI, Header, Request
+from fastapi import FastAPI, Header, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.api.auth import router as auth_router, users_router
+from app.api.content import router as content_router
+from app.api.inquiries import router as inquiries_router
+from app.api.imports import router as imports_router
+from app.api.public import router as public_router
 from app.core.config import Settings, get_settings
+from app.core.db import create_database_engine, get_db, initialize_database, session_factory
 from app.core.errors import ApiError
+from app.main_support import failure, meta_for, success
 
 API_ROOT = "/api/v1"
-
-
-def meta_for(request: Request) -> dict[str, str]:
-    request_id = getattr(request.state, "request_id", str(uuid4()))
-    return {
-        "request_id": request_id,
-        "server_time": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-    }
-
-
-def success(data: object, request: Request) -> dict[str, object]:
-    return {"data": data, "meta": meta_for(request)}
-
-
-def failure(
-    request: Request, code: str, message: str, details: list[dict] | None = None
-) -> dict[str, object]:
-    return {
-        "error": {"code": code, "message": message, "details": details or []},
-        "meta": meta_for(request),
-    }
 
 
 def is_api_request(request: Request) -> bool:
@@ -52,6 +37,17 @@ def validation_details(exc: RequestValidationError) -> list[dict[str, str]]:
 def create_app(settings: Settings | None = None) -> FastAPI:
     configured_settings = settings or get_settings()
     app = FastAPI(title=configured_settings.app_name, version="0.1.0")
+    engine = create_database_engine(configured_settings)
+    initialize_database(engine)
+    make_session = session_factory(engine)
+    app.state.settings = configured_settings
+    app.state.engine = engine
+
+    def database_dependency():
+        with make_session() as db:
+            yield db
+
+    app.dependency_overrides[get_db] = database_dependency
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(configured_settings.cors_origins),
@@ -110,9 +106,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get(f"{API_ROOT}/config", operation_id="getPublicConfig", tags=["public"])
     def public_config(
         request: Request,
+        response: Response,
         request_id: Annotated[UUID | None, Header(alias="X-Request-ID")] = None,
     ) -> dict[str, object]:
         del request_id
+        if not request.cookies.get("tea_sequence_public"):
+            response.set_cookie("tea_sequence_public", str(uuid4()), httponly=True, secure=configured_settings.cookie_secure, samesite="lax", max_age=86400)
         return success(
             {
                 "data_mode": "demo",
@@ -130,6 +129,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             },
             request,
         )
+
+    @app.get("/health/ready", operation_id="getReadyHealth", tags=["health"])
+    def ready() -> dict[str, str]:
+        return {"status": "ready"}
+
+    app.include_router(auth_router, prefix=API_ROOT)
+    app.include_router(users_router, prefix=API_ROOT)
+    app.include_router(content_router, prefix=API_ROOT)
+    app.include_router(inquiries_router, prefix=API_ROOT)
+    app.include_router(imports_router, prefix=API_ROOT)
+    app.include_router(public_router, prefix=API_ROOT)
 
     return app
 

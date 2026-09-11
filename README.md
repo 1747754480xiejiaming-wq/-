@@ -15,7 +15,7 @@ GitHub 仓库：<https://github.com/1747754480xiejiaming-wq/->
 - 响应式：本轮复核 1440×900 桌面七幕和 390×844 移动端；既有 768、390 和 375 宽度业务页面检查继续有效。
 - UI 细节：主导航活动指示条已居中文字；茶品详情批次选择已统一为米白、深茶绿风格的自定义菜单并支持键盘操作；首页竖排滚动提示已移入正文左侧留白区；首页茶图和印章已向左收进安全区，与右侧场景进度栏保持稳定间距。
 - 运营规则：草稿置顶；数据运营可删除草稿，项目管理员可删除商品；两者均可按状态互斥地上下架商品。重新上架保留当前版本、无需客户审核人再次授权；演示来源曾被撤回时同步恢复来源状态，确保用户端立即可见。
-- 数据状态：浏览器仍使用本机演示数据；已建立仅供本地联调的 FastAPI 契约服务骨架（`/health/live`、`/api/v1/config`），尚未接入数据库、身份系统或真实大模型，配置明确标识为 `demo`。
+- 数据状态：已建立可运行的 FastAPI 模块化后端、SQLite 本地持久化、PostgreSQL 配置入口、Alembic 基线、四角色会话、审核发布状态机、公开过滤、问茶/冲泡、咨询线索、审计与 CSV 导入；资料和规则问答仍明确标识为 `demo`，未接入真实大模型或对象存储。
 - 设计画布：Figma 已新增 8 个桌面端与 3 个移动端可编辑网页捕获；Penpot 已建立 7 页备用评审画布，覆盖桌面端、移动端、设计令牌、组件状态与关键流程。
 
 ## 快速开始
@@ -28,17 +28,21 @@ npm ci
 npm run dev
 ```
 
-### 后端契约服务（本地联调骨架）
+### 后端服务（本地联调）
 
-需要 Python 3.12 或更高版本。此阶段提供进程存活检查、统一成功/错误响应与非生产公开配置；不会提供真实资料、登录及模型能力。
+需要 Python 3.12 或更高版本。默认数据库为 `backend/tea_sequence.db`，仅用于本机联调；正式环境通过 `DATABASE_URL=postgresql+psycopg://...` 切换 PostgreSQL。
 
 ```powershell
 cd backend
 python -m pip install -e ".[dev]"
+python -m alembic upgrade head
+python -m app.seed
 python -m uvicorn app.main:app --port 8000
 ```
 
-健康检查：<http://127.0.0.1:8000/health/live>，预期仅返回 `{"status":"ok"}`。公开配置入口为 <http://127.0.0.1:8000/api/v1/config>，所有业务 API 将固定在 `/api/v1` 下；机器可读契约见 [`contracts/openapi.yaml`](contracts/openapi.yaml)。
+健康检查：<http://127.0.0.1:8000/health/live>；就绪检查：<http://127.0.0.1:8000/health/ready>；交互文档：<http://127.0.0.1:8000/docs>。业务 API 固定在 `/api/v1`，机器可读基线见 [`contracts/openapi.yaml`](contracts/openapi.yaml)。演示账号只记录在 [`backend/.env.example`](backend/.env.example) 中。
+
+后端已覆盖茶叶/批次、功效、冲泡、货源、来源授权、问茶、咨询、反馈、事件、内容草稿/审核/自动发布、下架/免复审重新上架、逻辑删除、账号权限、线索跟进、审计及 UTF-8 CSV 导入。公开文件、XLSX、真实模型和持久导出工作进程未配置时返回明确错误，不伪造成功。
 
 打开：
 
@@ -83,13 +87,13 @@ Figma 主文件：[茶序 · 茶文化智能体产品原型](https://www.figma.c
 
 Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71)。本轮 Figma `use_figma` 因 Starter 调用上限受阻，按既定规则改由 Penpot 完成备用画布，并保留回同步清单。
 
-最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-018`。
+最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-019`。
 
 ## 目录结构
 
 ```text
 prototype/             React + TypeScript + Vite 交互原型
-backend/               FastAPI 本地契约服务（当前仅健康检查和公开配置）
+backend/               FastAPI + SQLAlchemy + Alembic 后端与 pytest 集成测试
 contracts/             OpenAPI v1 机器可读契约
 design-snapshots/      Figma/Penpot 画布版本清单
 output/playwright/     桌面、平板和移动端验收截图
@@ -123,4 +127,4 @@ git switch -c restore/<名称> <commit-sha>
 
 ## 实施边界
 
-当前仓库用于产品交互、视觉和接口约束验证。正式上线前仍需实现服务端接口、持久化数据库、身份认证与授权、真实资料检索、模型调用、文件存储、并发控制、幂等提交、审计存储和部署配置。
+当前仓库已具备本地联调后端，但仍属于演示交付。正式上线前需要接入并验证 PostgreSQL、真实来源及授权、对象存储、检索索引、模型适配器、后台任务、生产 Cookie/域名、备份恢复和部署配置。
