@@ -105,14 +105,14 @@ git commit -m "snapshot(code): add typed API client foundation"
 - Consumes: Task 1 类型、现有 TeaItem/线索/审计演示数据与 U01--U14、C01--C13 规则。
 - Produces: Promise 化的 `PublicApi`、`AdminApi`、带订阅能力的 `MockStore`。
 
-- [ ] **Step 1: 定义 DTO 与适配器边界**
+- [x] **Step 1: 定义 DTO 与适配器边界**
 
 ```ts
 export interface PublicApi { getConfig(): Promise<PublicConfig>; searchTeas(q: TeaSearch): Promise<Page<SearchHit>>; getTeaItem(id: string): Promise<TeaItemPublic>; askQuestion(input: QuestionCreate): Promise<AnswerPublic>; createInquiry(input: InquiryCreate): Promise<InquiryReceipt>; }
 export interface AdminApi { getMe(): Promise<AdminUser>; listContent(q: ContentQuery): Promise<Page<ContentSummary>>; transitionContent(input: ContentCommand): Promise<ContentDetail<TeaItemPublic>>; }
 ```
 
-- [ ] **Step 2: 写 mock 行为失败测试**
+- [x] **Step 2: 写 mock 行为失败测试**
 
 ```ts
 await admin.withdraw({id: 'longjing-2026', ifMatch: 'rv-2', idempotencyKey: key});
@@ -123,7 +123,7 @@ expect((await publicApi.getTeaItem('longjing-2026')).id).toBe('longjing-2026');
 
 同时覆盖：来源撤回阻断公开读和问答、重新上架恢复来源、R 不能审核自身版本、O 仅能删除草稿。
 
-- [ ] **Step 3: 确认 mock 测试失败**
+- [x] **Step 3: 确认 mock 测试失败**
 
 Run: `npm test -- --run src/api/mock/mockApi.test.ts`  
 Expected: FAIL，mock 服务尚不存在。
