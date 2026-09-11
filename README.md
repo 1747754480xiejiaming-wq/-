@@ -57,6 +57,7 @@ npm run build
 | 前后端接口契约与 Skill 清单 | [`茶文化智能体_前后端接口契约与Skill清单.md`](茶文化智能体_前后端接口契约与Skill清单.md) |
 | 浏览器验收记录 | [`prototype/验收记录.md`](prototype/验收记录.md) |
 | 首页滚动与问茶冲泡融合设计 | [`docs/superpowers/specs/2026-09-10-home-scroll-qa-brewing-design.md`](docs/superpowers/specs/2026-09-10-home-scroll-qa-brewing-design.md) |
+| 沉浸式 Sticky 滚动首页设计 | [`docs/superpowers/specs/2026-09-11-envision-scroll-home-design.md`](docs/superpowers/specs/2026-09-11-envision-scroll-home-design.md) |
 | 设计画布工作流 | [`prototype/设计画布工作流.md`](prototype/设计画布工作流.md) |
 | Figma 状态 | [`work/figma-prototype/state.json`](work/figma-prototype/state.json) |
 | 设计快照 | [`design-snapshots/`](design-snapshots/) |
@@ -67,7 +68,7 @@ Figma 主文件：[茶序 · 茶文化智能体产品原型](https://www.figma.c
 
 Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71)。本轮 Figma `use_figma` 因 Starter 调用上限受阻，按既定规则改由 Penpot 完成备用画布，并保留回同步清单。
 
-最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260910-011`。
+最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-012`。
 
 ## 目录结构
 
