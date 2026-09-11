@@ -20,11 +20,12 @@
 | SNAP-20260911-014 | code | 为桌面七幕增加停滚自动吸附，并将场景改为单幕互斥显示，消除停在页面过渡位置时的文字和插画重影；移动端保留原生邻近吸附 | `npm run build`；1440×900 PageDown 连续验证七个精确停驻点且每次仅一幕可见；390×844 验证七幕文档流、历史深链接和无横向溢出 | 随本次提交推送至 GitHub `main` |
 | SNAP-20260911-015 | code | 将首页竖排滚动提示向左移入正文留白区，修复其与首页操作链接的文字重叠 | `npm run build`；默认桌面及 1440×900 视口检查提示间距、可读性和左侧裁切 | 随本次提交推送至 GitHub `main` |
 | SNAP-20260911-016 | code | 将首页茶图与印章整体向左移入安全区；中等桌面同步缩放，避免与右侧场景进度栏重叠，同时保持与左侧正文的间距 | `npm run build`；714px 与 1440×900 实测图片、印章、正文和进度栏边界，无裁切及横向溢出 | 随本次提交推送至 GitHub `main` |
-| SNAP-20260911-017 | code | 建立 FastAPI 可执行契约服务骨架，固定 `/api/v1`、统一 envelope、健康检查与渐进式 OpenAPI 配置接口；返回明确的非生产 `demo` 配置 | 初始契约测试已补跑并通过 | 本地快照；待推送 |
-| SNAP-20260911-018 | code | 固化后端实施计划与 Python 3.12 依赖，补齐业务 API 的 404、参数校验及未预期异常统一错误 envelope，并忽略本地数据库、虚拟环境和测试缓存 | `pytest backend/tests/contracts/test_envelope.py -q`：4 passed | 本地快照；待推送 |
-| SNAP-20260911-019 | code | 实现 FastAPI/SQLAlchemy/Alembic 后端：四角色会话与权限、茶品批次和来源授权、公开过滤、功效/冲泡/货源、问茶、咨询幂等、内容草稿与审核自动发布、上下架/逻辑删除、账号、线索、审计及 CSV 导入；扩展 OpenAPI 3.1 | 后端 `pytest -q`：25 passed；Alembic upgrade 通过；种子命令连续运行两次无重复 | 本地快照；待推送 |
-| SNAP-20260911-020 | code | 新增前端类型化 API 客户端、DTO 映射和 `VITE_API_BASE_URL` 切换；API 模式加载后端公开批次及冲泡参数，失败时保留原 localStorage 演示，未改变既有路由和后台交互 | 默认 `npm run build` 与设置 API 环境变量后的生产构建均通过 | 本地快照；待推送 |
-| SNAP-20260911-021 | code | 强化登录与写接口来源校验、Cookie/CSRF 防护和并发幂等键兜底；审核、上下架、CSV 导入提交及逻辑删除可在 ETag 或资源状态已变化后按原键精确重放 | 后端 `pytest -q`：28 passed；默认与 API 模式前端生产构建通过 | 随本次提交推送至 GitHub `codex/tea-backend-integration` |
+| SNAP-20260911-017 | code | 建立 FastAPI 可执行契约服务骨架，固定 `/api/v1`、统一 envelope、健康检查与渐进式 OpenAPI 配置接口；返回明确的非生产 `demo` 配置 | 初始契约测试已补跑并通过 | 已包含于 GitHub `codex/tea-backend-integration` |
+| SNAP-20260911-018 | code | 固化后端实施计划与 Python 3.12 依赖，补齐业务 API 的 404、参数校验及未预期异常统一错误 envelope，并忽略本地数据库、虚拟环境和测试缓存 | `pytest backend/tests/contracts/test_envelope.py -q`：4 passed | 已包含于 GitHub `codex/tea-backend-integration` |
+| SNAP-20260911-019 | code | 实现 FastAPI/SQLAlchemy/Alembic 后端：四角色会话与权限、茶品批次和来源授权、公开过滤、功效/冲泡/货源、问茶、咨询幂等、内容草稿与审核自动发布、上下架/逻辑删除、账号、线索、审计及 CSV 导入；扩展 OpenAPI 3.1 | 后端 `pytest -q`：25 passed；Alembic upgrade 通过；种子命令连续运行两次无重复 | 已包含于 GitHub `codex/tea-backend-integration` |
+| SNAP-20260911-020 | code | 新增前端类型化 API 客户端、DTO 映射和 `VITE_API_BASE_URL` 切换；API 模式加载后端公开批次及冲泡参数，失败时保留原 localStorage 演示，未改变既有路由和后台交互 | 默认 `npm run build` 与设置 API 环境变量后的生产构建均通过 | 已包含于 GitHub `codex/tea-backend-integration` |
+| SNAP-20260911-021 | code | 强化登录与写接口来源校验、Cookie/CSRF 防护和并发幂等键兜底；审核、上下架、CSV 导入提交及逻辑删除可在 ETag 或资源状态已变化后按原键精确重放 | 后端 `pytest -q`：28 passed；默认与 API 模式前端生产构建通过 | 已包含于 GitHub `codex/tea-backend-integration` |
+| SNAP-20260911-022 | code | 新增非破坏性 PowerShell 一键联调脚本和 T01–T23 验收矩阵，实测迁移、种子、API/Vite、公开目录与脱敏咨询回执，并如实标记生产排除项 | `run-local-integration.ps1 -Seed -Smoke -ApiPort 18001 -FrontendPort 14174` 通过；脚本创建进程已停止、端口已释放 | 随本次提交推送至 GitHub `codex/tea-backend-integration` |
 
 ## 回滚方法
 

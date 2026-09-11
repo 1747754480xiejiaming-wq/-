@@ -4,7 +4,7 @@
 
 GitHub 仓库：<https://github.com/1747754480xiejiaming-wq/->
 
-版本状态：`main` 保存已验证快照；后续每次代码或画布更新都会同步维护本 README、快照记录并推送。
+版本状态：`main` 保存前端基线；当前后端联调快照位于 `codex/tea-backend-integration`。后续每次代码或画布更新都会同步维护本 README、快照记录并推送。
 
 ![茶序用户端首页](output/playwright/18-home-preview.png)
 
@@ -53,6 +53,14 @@ python -m uvicorn app.main:app --port 8000
 
 后端已覆盖茶叶/批次、功效、冲泡、货源、来源授权、问茶、咨询、反馈、事件、内容草稿/审核/自动发布、下架/免复审重新上架、逻辑删除、账号权限、线索跟进、审计及 UTF-8 CSV 导入。公开文件、XLSX、真实模型和持久导出工作进程未配置时返回明确错误，不伪造成功。
 
+安装依赖后，也可以从仓库根目录一次启动两端并执行冒烟检查：
+
+```powershell
+.\scripts\run-local-integration.ps1 -Seed -Smoke
+```
+
+脚本会先检查 Python 3.12、Node.js 22、依赖和端口，再执行迁移与可选种子，启动 API/Vite 并验证就绪、公开目录和脱敏咨询回执。它不会删除数据库或停止已占用端口的其他进程；成功后会打印本次进程 PID。完整证据与 T01–T23 覆盖边界见 [`docs/acceptance/backend-local-integration.md`](docs/acceptance/backend-local-integration.md)。
+
 打开：
 
 - 用户端：<http://127.0.0.1:4173/>
@@ -82,6 +90,7 @@ npm run build
 | 前后端接口契约与 Skill 清单 | [`茶文化智能体_前后端接口契约与Skill清单.md`](茶文化智能体_前后端接口契约与Skill清单.md) |
 | 机器可读 API 契约 | [`contracts/openapi.yaml`](contracts/openapi.yaml) |
 | 后端服务 | [`backend/`](backend/) |
+| 本地联调验收 | [`docs/acceptance/backend-local-integration.md`](docs/acceptance/backend-local-integration.md) |
 | 浏览器验收记录 | [`prototype/验收记录.md`](prototype/验收记录.md) |
 | 首页滚动与问茶冲泡融合设计 | [`docs/superpowers/specs/2026-09-10-home-scroll-qa-brewing-design.md`](docs/superpowers/specs/2026-09-10-home-scroll-qa-brewing-design.md) |
 | 沉浸式 Sticky 滚动首页设计 | [`docs/superpowers/specs/2026-09-11-envision-scroll-home-design.md`](docs/superpowers/specs/2026-09-11-envision-scroll-home-design.md) |
@@ -96,7 +105,7 @@ Figma 主文件：[茶序 · 茶文化智能体产品原型](https://www.figma.c
 
 Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71)。本轮 Figma `use_figma` 因 Starter 调用上限受阻，按既定规则改由 Penpot 完成备用画布，并保留回同步清单。
 
-最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-021`。
+最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-022`。
 
 ## 目录结构
 
@@ -107,6 +116,7 @@ contracts/             OpenAPI v1 机器可读契约
 design-snapshots/      Figma/Penpot 画布版本清单
 output/playwright/     桌面、平板和移动端验收截图
 work/figma-prototype/  Figma 构建脚本与状态记录
+scripts/               非破坏性本地联调启动脚本
 prd_outputs/           产品与开发方案交付资料
 ```
 
