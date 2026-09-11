@@ -326,24 +326,24 @@ git commit -m "snapshot(code): connect admin platforms to API services"
 - Consumes: Tasks 1--5。
 - Produces: 模式说明、桌面/移动/故障态证据和可回滚发布快照。
 
-- [ ] **Step 1: 运行全量自动检查**
+- [x] **Step 1: 运行全量自动检查**
 
 Run: `npm test && npm run build`  
 Expected: API、mock、live、公开端和后台测试全部通过。
 
-- [ ] **Step 2: 验收 mock 桌面与移动**
+- [x] **Step 2: 验收 mock 桌面与移动**
 
 以 `VITE_API_MODE=mock npm run dev` 启动。1440×900 验证七幕、搜索、详情、问答、咨询、四后台角色、审核、上下架和来源恢复，保存 `19-api-mock-desktop.png`。390×844 验证深链接、移动导航、问茶、咨询和后台菜单，确认 `document.documentElement.scrollWidth <= window.innerWidth`，保存 `20-api-mock-mobile.png`。
 
-- [ ] **Step 3: 验收 live 故障边界**
+- [x] **Step 3: 验收 live 故障边界**
 
 以 `VITE_API_MODE=live VITE_API_BASE_URL=http://127.0.0.1:9999/api/v1 npm run dev` 启动；确认服务不可用与重试入口、无未捕获控制台异常，保存 `21-api-live-unavailable.png`。
 
-- [ ] **Step 4: 更新文档与版本表**
+- [x] **Step 4: 更新文档与版本表**
 
 README 写明 mock/live、环境变量和已验证边界；原型说明列出模式切换；验收记录声明 live 无后端仅验证故障边界；VERSION_SNAPSHOTS 添加快照号、命令和推送状态。
 
-- [ ] **Step 5: 提交并推送最终快照**
+- [x] **Step 5: 提交并推送最终快照**
 
 ```bash
 git add README.md VERSION_SNAPSHOTS.md prototype output/playwright

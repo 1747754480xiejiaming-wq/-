@@ -17,6 +17,17 @@ npm run dev
 
 已安装依赖时只需 `npm run dev`。当前会话已启动服务；若地址无法打开，重新运行即可。构建检查使用 `npm run build`；构建结果位于 `dist`，需通过 HTTP 服务打开，不能直接双击 HTML。此地址仅供本机访问。
 
+## API 运行模式
+
+默认 `mock` 模式不发 HTTP 请求，公开端与后台共用同一契约状态机。复制 `.env.example` 为 `.env.local` 可以切换真实服务：
+
+```dotenv
+VITE_API_MODE=live
+VITE_API_BASE_URL=http://127.0.0.1:8000/api/v1
+```
+
+只接受 `mock` 或 `live`。live 请求携带 cookie；写请求按需携带 CSRF、ETag 与幂等键，不在 localStorage 保存会话或 CSRF。live 后端不可达时显示服务不可用与重试入口，不读取 mock 种子补位。
+
 ## 版本快照
 
 每次代码或设计画布改动完成并验证后，都要创建独立 Git 提交并推送到项目 GitHub 仓库。画布改动还需在项目根目录 `design-snapshots/` 保存 Figma/Penpot 链接、节点、版本说明和截图或导出物。完整规则见项目根目录 `AGENTS.md`，快照索引见 `VERSION_SNAPSHOTS.md`。
@@ -72,15 +83,15 @@ Figma 文件：[茶序 · 茶文化智能体产品原型](https://www.figma.com/
 
 `src/api/mock/` 已将公开读取和后台命令建模为独立服务。它会阻断草稿、下架内容及来源撤回后的公开读取；重新上架保持已审核内容并恢复本次演示来源。该层用于验证页面接入前的契约和状态机，不会连接真实服务。
 
-`src/api/createServices.ts` 已按 `VITE_API_MODE` 选择 mock 或 live 适配器；live 端点严格使用 `/api/v1` 契约路径、snake_case 查询参数、cookie、CSRF、ETag 和调用方幂等键。`AppServicesContext` 已注入应用根节点，现有页面将在后续批次逐步改为消费该服务。
+`src/api/createServices.ts` 按 `VITE_API_MODE` 选择 mock 或 live 适配器；live 端点严格使用 `/api/v1` 契约路径、snake_case 查询参数、cookie、CSRF、ETag 和调用方幂等键。公开目录、详情、问茶冲泡、咨询及四套后台页面均已迁移到 `AppServicesContext` 的领域服务。
 
-- 数据保存在本机浏览器 localStorage；跨设备不共享。所有资料、供应主体、价格和线索均为演示。
-- 问答是可控的示例状态，没有连接真实模型或检索服务；引用没有冒充真实研究资料。
+- mock 领域数据保存在当前页面内存，刷新后恢复种子；界面审计和少量演示偏好保存在本机 localStorage，跨设备不共享。所有资料、供应主体、价格和线索均为演示。
+- mock 问答是可控的契约响应，没有连接真实模型或检索服务；引用没有冒充真实研究资料。
 - 联系方式在写入本机记录前脱敏；没有发送咨询，也没有支付或订单。
-- 后台身份可切换以验证交互；正式会话、权限、审稿身份隔离、并发版本、幂等、审计持久化必须由后端实现。
+- mock 后台身份可切换以验证四类权限；live 身份由 A03 会话固定。正式授权、审稿身份隔离和审计持久化仍必须由后端执行。
 - 当前编辑器可修改资料说明；完整结构化配方、资料附件、授权管理、账号创建等正式表单仍需后续开发。
-- CSV 解析运行在浏览器；XLSX、服务端文件存储、正式全字段校验和导入任务接口尚未接入。
+- mock 提供可控的导入校验示例；live 下 I01--I05 未接入时明确禁用，不伪造上传或导入成功。XLSX、服务端文件存储和完整字段校验仍需后端。
 - 演示版本对比仅保留当前公开内容与工作草稿；完整历史版本查询依照正式契约实现。
 - 字体可从 Google Fonts 加载；无法联网时使用本机中文字体。茶盏与茶山插画为代码内的原创 SVG。
 
-验证详情见 `验收记录.md`，截图位于项目根目录 `output/playwright/`。
+验证详情见 `验收记录.md`。最终截图为项目根目录 `output/playwright/19-api-mock-desktop.png`、`20-api-mock-mobile.png` 与 `21-api-live-unavailable.png`。
