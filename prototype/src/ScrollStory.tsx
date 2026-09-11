@@ -57,6 +57,22 @@ export function ScrollStory({items,onSectionChange}:Props){
     setActive(nearest);
   },[setActive]);
 
+  const snapDesktop=useCallback(()=>{
+    const track=trackRef.current;
+    if(!track)return;
+    const stickyTop=parseFloat(getComputedStyle(track).getPropertyValue('--story-header'))||88;
+    const stageHeight=Math.max(1,innerHeight-stickyTop);
+    const distance=Math.max(1,track.offsetHeight-stageHeight);
+    const rawProgress=(stickyTop-track.getBoundingClientRect().top)/distance;
+    if(rawProgress<=0||rawProgress>=1)return;
+    const nearestIndex=Math.round(rawProgress*(sceneMeta.length-1));
+    const trackTop=scrollY+track.getBoundingClientRect().top;
+    const targetY=trackTop-stickyTop+distance*(nearestIndex/(sceneMeta.length-1));
+    if(Math.abs(scrollY-targetY)<2)return;
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({top:targetY,behavior:reduced?'auto':'smooth'});
+  },[]);
+
   const scrollToScene=useCallback((sceneId:SceneId,focusAfter=false)=>{
     const index=sceneMeta.findIndex(scene=>scene.id===sceneId);
     const scene=sceneRefs.current[index];
@@ -85,12 +101,17 @@ export function ScrollStory({items,onSectionChange}:Props){
 
   useEffect(()=>{
     let frame=0;
-    const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(stackedMode?updateMobile:updateDesktop)};
+    let settleTimer=0;
+    const update=()=>{
+      cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(stackedMode?updateMobile:updateDesktop);
+      if(!stackedMode){clearTimeout(settleTimer);settleTimer=window.setTimeout(snapDesktop,160)}
+    };
     update();
     addEventListener('scroll',update,{passive:true});
     addEventListener('resize',update);
-    return()=>{cancelAnimationFrame(frame);removeEventListener('scroll',update);removeEventListener('resize',update)};
-  },[stackedMode,updateDesktop,updateMobile]);
+    return()=>{cancelAnimationFrame(frame);clearTimeout(settleTimer);removeEventListener('scroll',update);removeEventListener('resize',update)};
+  },[snapDesktop,stackedMode,updateDesktop,updateMobile]);
 
   useEffect(()=>{
     const requested=new URLSearchParams(location.hash.split('?')[1]||'').get('section');
