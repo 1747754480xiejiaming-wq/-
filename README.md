@@ -30,7 +30,7 @@ npm run dev
 
 ### 后端契约服务（本地联调骨架）
 
-需要 Python 3.10 或更高版本。此阶段只提供进程存活检查与非生产的公开配置；不会创建数据库或提供真实资料、登录及模型能力。
+需要 Python 3.12 或更高版本。此阶段提供进程存活检查、统一成功/错误响应与非生产公开配置；不会提供真实资料、登录及模型能力。
 
 ```powershell
 cd backend
@@ -83,7 +83,7 @@ Figma 主文件：[茶序 · 茶文化智能体产品原型](https://www.figma.c
 
 Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71)。本轮 Figma `use_figma` 因 Starter 调用上限受阻，按既定规则改由 Penpot 完成备用画布，并保留回同步清单。
 
-最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-016`。
+最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-018`。
 
 ## 目录结构
 

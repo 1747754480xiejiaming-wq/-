@@ -1,0 +1,8 @@
+.venv/
+backend/.deps/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+backend/tea_sequence.db
+backend/test-*.db
+prototype/coverage/
