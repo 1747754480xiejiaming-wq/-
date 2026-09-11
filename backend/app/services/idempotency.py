@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 
 from fastapi import Request
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.errors import ApiError
@@ -32,5 +33,14 @@ def execute_idempotent(db: Session, request: Request, *, principal_id: str, key:
     data = operation()
     envelope = success(data, request)
     db.add(IdempotencyRecord(id=str(uuid4()), principal_id=principal_id, method=request.method, path=request.url.path, key=normalized_key, request_hash=request_hash, status_code=status_code, response_data=envelope))
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        winner = db.scalar(select(IdempotencyRecord).where(IdempotencyRecord.principal_id == principal_id, IdempotencyRecord.method == request.method, IdempotencyRecord.path == request.url.path, IdempotencyRecord.key == normalized_key))
+        if not winner:
+            raise
+        if winner.request_hash != request_hash:
+            raise ApiError("IDEMPOTENCY_CONFLICT", 409, "同一幂等键不能用于不同请求")
+        return winner.status_code, winner.response_data
     return status_code, envelope

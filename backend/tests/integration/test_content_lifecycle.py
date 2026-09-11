@@ -21,3 +21,13 @@ def test_operator_cannot_delete_published_item(client, login):
     path = f"/api/v1/admin/content/tea-items/{DEMO_IDS['longjing-2026']}"
     detail = client.get(path, headers=operator)
     assert client.delete(path, headers={**operator, 'If-Match': detail.headers['etag'], 'Idempotency-Key': str(uuid4())}).status_code == 403
+
+
+def test_admin_delete_replays_after_logical_delete(client, login):
+    admin = login('admin')
+    path = f"/api/v1/admin/content/tea-items/{DEMO_IDS['longjing-2026']}"
+    detail = client.get(path, headers=admin)
+    headers = {**admin, 'If-Match': detail.headers['etag'], 'Idempotency-Key': str(uuid4())}
+    assert client.delete(path, headers=headers).status_code == 204
+    assert client.delete(path, headers=headers).status_code == 204
+    assert client.get(f"/api/v1/tea-items/{DEMO_IDS['longjing-2026']}").status_code == 404

@@ -27,7 +27,7 @@ def test_same_key_with_other_body_conflicts(client):
 
 def test_question_returns_brewing_match_with_citation(client):
     client.get('/api/v1/config')
-    response = client.post('/api/v1/questions', headers={'Idempotency-Key': str(uuid4())}, json={'question': '西湖龙井怎么泡？'})
+    response = client.post('/api/v1/questions', headers={'Idempotency-Key': str(uuid4()), 'Origin': 'http://testserver'}, json={'question': '西湖龙井怎么泡？'})
     assert response.status_code == 200
     assert response.json()['data']['status'] == 'answered'
     assert response.json()['data']['intent'] == 'brewing'
@@ -37,4 +37,15 @@ def test_question_returns_brewing_match_with_citation(client):
 def test_notice_change_does_not_create_inquiry(client):
     client.get('/api/v1/config')
     body = inquiry_body(); body['consent']['notice_version'] = 'old'
-    assert client.post('/api/v1/inquiries', headers={'Idempotency-Key': str(uuid4())}, json=body).status_code == 409
+    assert client.post('/api/v1/inquiries', headers={'Idempotency-Key': str(uuid4()), 'Origin': 'http://testserver'}, json=body).status_code == 409
+
+
+def test_public_write_rejects_missing_origin(client):
+    client.get('/api/v1/config')
+    response = client.post(
+        '/api/v1/questions',
+        headers={'Idempotency-Key': str(uuid4())},
+        json={'question': '西湖龙井怎么泡？'},
+    )
+    assert response.status_code == 403
+    assert response.json()['error']['code'] == 'ORIGIN_NOT_ALLOWED'

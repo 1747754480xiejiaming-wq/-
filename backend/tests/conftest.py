@@ -23,7 +23,7 @@ def login(client):
     passwords = {"operator": "Operator1234!", "reviewer": "Reviewer1234!", "lead": "LeadFollow1234!", "admin": "ProjectAdmin1234!"}
     def authenticate(username: str) -> dict[str, str]:
         csrf = client.get('/api/v1/admin/auth/csrf').json()['data']['csrf_token']
-        result = client.post('/api/v1/admin/auth/login', headers={'X-CSRF-Token': csrf}, json={'username': username, 'password': passwords[username]})
+        result = client.post('/api/v1/admin/auth/login', headers={'X-CSRF-Token': csrf, 'Origin': 'http://testserver'}, json={'username': username, 'password': passwords[username]})
         assert result.status_code == 200, result.text
-        return {'X-CSRF-Token': result.json()['data']['csrf_token']}
+        return {'X-CSRF-Token': result.json()['data']['csrf_token'], 'Origin': 'http://testserver'}
     return authenticate

@@ -389,14 +389,14 @@ components:
     CsrfToken:
       name: X-CSRF-Token
       in: header
-      required: false
+      required: true
       description: Required by later cookie-authenticated state-changing operations.
       schema:
         type: string
     IdempotencyKey:
       name: Idempotency-Key
       in: header
-      required: false
+      required: true
       description: Required by later state-changing operations; must be a UUID.
       schema:
         type: string

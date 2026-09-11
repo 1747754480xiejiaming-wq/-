@@ -18,7 +18,12 @@ def test_missing_and_stale_if_match_are_rejected(client, login):
 def test_separate_reviewer_approves_and_publishes(client, login):
     reviewer = login('reviewer')
     pending, review_etag = current(client, reviewer, 'tea-items', DEMO_IDS['qimen-draft'])
-    approved = client.post(f"{pending.request.url.path}/review", headers={**reviewer, 'If-Match': review_etag, 'Idempotency-Key': str(uuid4())}, json={'revision': pending.json()['data']['revision'], 'decision': 'approve', 'comment': '符合演示资料范围'})
+    headers = {**reviewer, 'If-Match': review_etag, 'Idempotency-Key': str(uuid4())}
+    body = {'revision': pending.json()['data']['revision'], 'decision': 'approve', 'comment': '符合演示资料范围'}
+    approved = client.post(f"{pending.request.url.path}/review", headers=headers, json=body)
+    replay = client.post(f"{pending.request.url.path}/review", headers=headers, json=body)
     assert approved.status_code == 200
+    assert replay.status_code == 200
+    assert replay.json() == approved.json()
     assert approved.json()['data']['status'] == 'published'
     assert client.get(f"/api/v1/tea-items/{DEMO_IDS['qimen-draft']}").status_code == 200

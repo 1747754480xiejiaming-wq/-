@@ -9,7 +9,7 @@ def inquiry_body():
 
 def create_inquiry(client):
     client.get('/api/v1/config')
-    response = client.post('/api/v1/inquiries', headers={'Idempotency-Key': str(uuid4())}, json=inquiry_body())
+    response = client.post('/api/v1/inquiries', headers={'Idempotency-Key': str(uuid4()), 'Origin': 'http://testserver'}, json=inquiry_body())
     return response.json()['data']['id']
 
 

@@ -13,9 +13,8 @@ from app.models.content import ContentRecord, ContentRevision
 from app.schemas.content import LifecycleCreate, ReviewCreate, RevisionCreate, SubmitReview
 from app.services.audit import append_audit
 from app.services.catalog import paginate
-from app.services.content import add_revision, content_detail, create_content, patch_content, relist_content, require_etag, review_content, submit_review, validate_resource, withdraw_content
+from app.services.content import add_revision, content_detail, create_content, patch_content, relist_content, require_etag, review_content, submit_review, withdraw_content
 from app.services.idempotency import execute_idempotent
-from app.services.idempotency import require_key
 from app.models.base import utcnow
 
 router = APIRouter(tags=["admin-content"])
@@ -90,19 +89,20 @@ def diff(resource: str, content_id: str, request: Request, db: Annotated[Session
 
 @router.post("/admin/content/{resource}/{content_id}/revisions", status_code=201, operation_id="createContentRevision")
 def create_revision(resource: str, content_id: str, body: RevisionCreate, request: Request, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_csrf), if_match: Annotated[str | None, Header(alias="If-Match")] = None, idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None):
-    need(principal, "content:write"); record = get_record(db, resource, content_id); require_etag(record, if_match)
-    if record.status != "published" or body.base_revision != record.published_revision: raise ApiError("INVALID_STATE", 409, "只能从当前发布版本创建草稿")
+    need(principal, "content:write"); record = get_record(db, resource, content_id)
     def operation():
+        require_etag(record, if_match)
+        if record.status != "published" or body.base_revision != record.published_revision: raise ApiError("INVALID_STATE", 409, "只能从当前发布版本创建草稿")
         record.revision += 1; record.payload = dict(record.published_payload); record.status = "draft"; record.updated_by = principal.user.id; record.row_version += 1; add_revision(db, record, principal.user.id, body.reason); db.flush(); return content_detail(record)
-    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body=body.model_dump(mode="json"), status_code=201, operation=operation)
+    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body={**body.model_dump(mode="json"), "_if_match": if_match}, status_code=201, operation=operation)
     return JSONResponse(status_code=code, content=envelope)
 
 
 @router.post("/admin/content/{resource}/{content_id}/submit-review", operation_id="submitContentReview")
 def submit(resource: str, content_id: str, body: SubmitReview, request: Request, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_csrf), if_match: Annotated[str | None, Header(alias="If-Match")] = None, idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None):
-    need(principal, "content:write"); record = get_record(db, resource, content_id); require_etag(record, if_match)
-    def operation(): submit_review(db, record, principal.user.id, body.revision); db.flush(); return content_detail(record)
-    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body=body.model_dump(mode="json"), status_code=200, operation=operation); return JSONResponse(status_code=code, content=envelope)
+    need(principal, "content:write"); record = get_record(db, resource, content_id)
+    def operation(): require_etag(record, if_match); submit_review(db, record, principal.user.id, body.revision); db.flush(); return content_detail(record)
+    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body={**body.model_dump(mode="json"), "_if_match": if_match}, status_code=200, operation=operation); return JSONResponse(status_code=code, content=envelope)
 
 
 @router.get("/admin/reviews", operation_id="listReviews")
@@ -116,18 +116,19 @@ def reviews(request: Request, db: Annotated[Session, Depends(get_db)], principal
 
 @router.post("/admin/content/{resource}/{content_id}/review", operation_id="reviewContent")
 def review(resource: str, content_id: str, body: ReviewCreate, request: Request, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_csrf), if_match: Annotated[str | None, Header(alias="If-Match")] = None, idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None):
-    need(principal, "content:review"); record = get_record(db, resource, content_id); require_etag(record, if_match)
-    def operation(): review_content(db, record, principal.user, body.revision, body.decision, body.comment, request.state.request_id); db.flush(); return content_detail(record)
-    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body=body.model_dump(mode="json"), status_code=200, operation=operation); return JSONResponse(status_code=code, content=envelope)
+    need(principal, "content:review"); record = get_record(db, resource, content_id)
+    def operation(): require_etag(record, if_match); review_content(db, record, principal.user, body.revision, body.decision, body.comment, request.state.request_id); db.flush(); return content_detail(record)
+    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body={**body.model_dump(mode="json"), "_if_match": if_match}, status_code=200, operation=operation); return JSONResponse(status_code=code, content=envelope)
 
 
 def lifecycle_command(action: str, resource: str, content_id: str, body: LifecycleCreate, request: Request, db: Session, principal: Principal, if_match: str | None, idempotency_key: str | None):
-    need(principal, "content:lifecycle"); record = get_record(db, resource, content_id); require_etag(record, if_match)
+    need(principal, "content:lifecycle"); record = get_record(db, resource, content_id)
     def operation():
+        require_etag(record, if_match)
         if action == "withdraw": withdraw_content(db, record, principal.user.id, body.reason or "", request.state.request_id)
         else: relist_content(db, record, principal.user.id, request.state.request_id)
         db.flush(); return content_detail(record)
-    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body=body.model_dump(mode="json"), status_code=200, operation=operation); return JSONResponse(status_code=code, content=envelope)
+    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body={**body.model_dump(mode="json"), "_if_match": if_match}, status_code=200, operation=operation); return JSONResponse(status_code=code, content=envelope)
 
 
 @router.post("/admin/content/{resource}/{content_id}/withdraw", operation_id="withdrawContent")
@@ -140,8 +141,11 @@ def relist(resource: str, content_id: str, body: LifecycleCreate, request: Reque
 
 @router.delete("/admin/content/tea-items/{content_id}", status_code=204, operation_id="deleteTeaItem")
 def delete_item(content_id: str, request: Request, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_csrf), if_match: Annotated[str | None, Header(alias="If-Match")] = None, idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None):
-    require_key(idempotency_key); record = get_record(db, "tea-items", content_id); require_etag(record, if_match)
-    if principal.user.role != "admin" and not (principal.user.role == "operator" and record.status == "draft" and record.created_by == principal.user.id): raise ApiError("FORBIDDEN", 403, "仅管理员可删除商品，运营只能删除本人未提交草稿")
-    record.deleted_at = utcnow(); record.status = "deleted"; record.publication_state = "deleted"; record.row_version += 1
-    append_audit(db, actor_id=principal.user.id, action="content_deleted", resource="tea-items", object_id=record.id, request_id=request.state.request_id, summary=f"{record.title}：逻辑删除"); db.commit()
+    if principal.user.role not in {"admin", "operator"}: raise ApiError("FORBIDDEN", 403, "仅管理员可删除商品，运营只能删除本人未提交草稿")
+    def operation():
+        record = get_record(db, "tea-items", content_id); require_etag(record, if_match)
+        if principal.user.role != "admin" and not (record.status == "draft" and record.created_by == principal.user.id): raise ApiError("FORBIDDEN", 403, "仅管理员可删除商品，运营只能删除本人未提交草稿")
+        record.deleted_at = utcnow(); record.status = "deleted"; record.publication_state = "deleted"; record.row_version += 1
+        append_audit(db, actor_id=principal.user.id, action="content_deleted", resource="tea-items", object_id=record.id, request_id=request.state.request_id, summary=f"{record.title}：逻辑删除"); db.flush(); return {"deleted": True}
+    execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body={"_if_match": if_match}, status_code=204, operation=operation)
     return Response(status_code=204)

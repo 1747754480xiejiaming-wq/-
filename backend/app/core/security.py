@@ -74,12 +74,20 @@ def require_principal(
 
 
 def require_csrf(
+    request: Request,
     csrf_token: Annotated[str | None, Header(alias="X-CSRF-Token")] = None,
     principal: Principal = Depends(require_principal),
 ) -> Principal:
+    validate_origin(request)
     if not csrf_token or not secrets.compare_digest(csrf_token, principal.session.csrf_token):
         raise ApiError("CSRF_INVALID", 403, "请求验证失败")
     return principal
+
+
+def validate_origin(request: Request) -> None:
+    origin = request.headers.get("Origin")
+    if not origin or origin not in request.app.state.settings.cors_origins:
+        raise ApiError("ORIGIN_NOT_ALLOWED", 403, "请求来源不受信任")
 
 
 def require_permission(permission: str):

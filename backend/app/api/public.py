@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.core.db import get_db
 from app.core.errors import ApiError
+from app.core.security import validate_origin
 from app.main_support import success
 from app.models.content import ContentRecord
 from app.models.inquiry import Feedback, Inquiry, MetricEvent
@@ -112,6 +113,7 @@ def get_public_file(file_id: str):
 
 @router.post("/questions", operation_id="createQuestion")
 def create_question(body: QuestionCreate, request: Request, db: Annotated[Session, Depends(get_db)], idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None, public_session: Annotated[str | None, Cookie(alias="tea_sequence_public")] = None):
+    validate_origin(request)
     pid = principal_id(public_session)
     body_data = body.model_dump(mode="json")
     def operation():
@@ -142,6 +144,7 @@ def create_question(body: QuestionCreate, request: Request, db: Annotated[Sessio
 
 @router.post("/inquiries", operation_id="createInquiry")
 def create_inquiry(body: InquiryCreate, request: Request, db: Annotated[Session, Depends(get_db)], idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None, public_session: Annotated[str | None, Cookie(alias="tea_sequence_public")] = None):
+    validate_origin(request)
     pid = principal_id(public_session)
     if body.consent.notice_version != request.app.state.settings.inquiry_notice_version:
         raise ApiError("NOTICE_CHANGED", 409, "告知文本已更新，请重新阅读并同意")
@@ -165,6 +168,7 @@ def create_inquiry(body: InquiryCreate, request: Request, db: Annotated[Session,
 
 @router.post("/feedback", operation_id="createFeedback")
 def create_feedback(body: FeedbackCreate, request: Request, db: Annotated[Session, Depends(get_db)], idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None, public_session: Annotated[str | None, Cookie(alias="tea_sequence_public")] = None):
+    validate_origin(request)
     pid = principal_id(public_session)
     def operation():
         record = Feedback(id=str(uuid4()), target_type=body.target_type, target_id=str(body.target_id), target_version=body.target_version, rating=body.rating, reason=body.reason, principal_id=pid)
@@ -176,6 +180,7 @@ def create_feedback(body: FeedbackCreate, request: Request, db: Annotated[Sessio
 
 @router.post("/events", operation_id="createEvents")
 def create_events(body: EventBatchCreate, request: Request, db: Annotated[Session, Depends(get_db)], idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None, public_session: Annotated[str | None, Cookie(alias="tea_sequence_public")] = None):
+    validate_origin(request)
     pid = principal_id(public_session)
     def operation():
         accepted = duplicate = 0

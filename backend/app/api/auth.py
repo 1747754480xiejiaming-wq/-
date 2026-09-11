@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.db import get_db
 from app.core.errors import ApiError
-from app.core.security import Principal, hash_password, new_expiry, new_token, require_csrf, require_principal, verify_password
+from app.core.security import Principal, hash_password, new_expiry, new_token, require_csrf, require_principal, validate_origin, verify_password
 from app.main_support import success
 from app.models.identity import AdminSession, AdminUser
 from app.schemas.auth import AdminUserCreate, AdminUserPatch, LoginCreate, PasswordChange, PasswordReset
@@ -48,6 +48,7 @@ def login(
     csrf_token: Annotated[str | None, Header(alias="X-CSRF-Token")] = None,
 ):
     settings = request.app.state.settings
+    validate_origin(request)
     old_id = request.cookies.get(settings.session_cookie_name)
     old = db.get(AdminSession, old_id) if old_id else None
     if not old or not csrf_token or old.csrf_token != csrf_token:
@@ -69,9 +70,7 @@ def me(request: Request, principal: Principal = Depends(require_principal)):
 
 
 @router.post("/logout", status_code=204, operation_id="logoutAdmin")
-def logout(request: Request, response: Response, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_principal), csrf_token: Annotated[str | None, Header(alias="X-CSRF-Token")] = None):
-    if not csrf_token or csrf_token != principal.session.csrf_token:
-        raise ApiError("CSRF_INVALID", 403, "请求验证失败")
+def logout(request: Request, response: Response, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_csrf)):
     db.delete(principal.session)
     db.commit()
     response.delete_cookie(request.app.state.settings.session_cookie_name)
@@ -105,9 +104,9 @@ def list_users(request: Request, db: Annotated[Session, Depends(get_db)], princi
 @users_router.post("", operation_id="createAdminUser", status_code=201)
 def create_user(body: AdminUserCreate, request: Request, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_csrf), idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None):
     require_user_admin(principal)
-    if db.scalar(select(AdminUser).where(AdminUser.username == body.username)):
-        raise ApiError("ALREADY_EXISTS", 409, "用户名已存在")
     def operation():
+        if db.scalar(select(AdminUser).where(AdminUser.username == body.username)):
+            raise ApiError("ALREADY_EXISTS", 409, "用户名已存在")
         user = AdminUser(id=str(uuid4()), username=body.username, display_name=body.display_name, password_hash=hash_password(body.initial_password), role=body.role, permission_codes=body.permission_codes, review_domains=list(body.review_domains), must_change_password=True)
         db.add(user); db.flush(); append_audit(db, actor_id=principal.user.id, action="user_created", resource="users", object_id=user.id, request_id=request.state.request_id, summary=f"创建账号：{user.username}"); return user_data(user)
     code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body=body.model_dump(mode="json"), status_code=201, operation=operation)

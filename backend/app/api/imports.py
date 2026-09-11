@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import io
 import json
 from typing import Annotated, Literal
@@ -17,7 +18,7 @@ from app.models.job import ImportJob
 from app.services.audit import append_audit
 from app.services.catalog import paginate
 from app.services.content import RESOURCE_ADAPTERS, content_detail, create_content
-from app.services.idempotency import execute_idempotent, require_key
+from app.services.idempotency import execute_idempotent
 
 router = APIRouter(tags=["admin-imports"])
 
@@ -68,7 +69,7 @@ def decode_cell(key: str, value: str):
 
 @router.post("/admin/imports", status_code=202, operation_id="createImport")
 async def create_import(request: Request, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_csrf), file: UploadFile = File(), resource: str = Form(), schema_version: str = Form(), idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None):
-    require_imports(principal); require_key(idempotency_key)
+    require_imports(principal)
     if resource not in TEMPLATE_COLUMNS or not file.filename or not file.filename.lower().endswith(".csv"):
         raise ApiError("UNSUPPORTED_FILE", 422, "仅接受所选资源的 UTF-8 CSV 文件")
     raw = await file.read(10 * 1024 * 1024 + 1)
@@ -85,9 +86,12 @@ async def create_import(request: Request, db: Annotated[Session, Depends(get_db)
             RESOURCE_ADAPTERS[resource].validate_python(payload); rows.append(payload)
         except Exception:
             errors.append({"row": row_no, "column": "*", "code": "VALIDATION_ERROR", "message": "字段格式或必填值无效"})
-    job = ImportJob(id=str(uuid4()), resource=resource, schema_version=schema_version, state="invalid" if errors else "validated", total_rows=len(rows) + len(errors), error_rows=len(errors), rows=rows, errors=errors, created_by=principal.user.id)
-    db.add(job); append_audit(db, actor_id=principal.user.id, action="import_validated", resource=resource, object_id=job.id, request_id=request.state.request_id, summary=f"导入校验：{job.total_rows} 行，{job.error_rows} 行错误"); db.commit()
-    return success(job_data(job), request)
+    def operation():
+        job = ImportJob(id=str(uuid4()), resource=resource, schema_version=schema_version, state="invalid" if errors else "validated", total_rows=len(rows) + len(errors), error_rows=len(errors), rows=rows, errors=errors, created_by=principal.user.id)
+        db.add(job); db.flush(); append_audit(db, actor_id=principal.user.id, action="import_validated", resource=resource, object_id=job.id, request_id=request.state.request_id, summary=f"导入校验：{job.total_rows} 行，{job.error_rows} 行错误"); return job_data(job)
+    fingerprint = {"resource": resource, "schema_version": schema_version, "file_sha256": hashlib.sha256(raw).hexdigest()}
+    code, envelope = execute_idempotent(db, request, principal_id=principal.user.id, key=idempotency_key, body=fingerprint, status_code=202, operation=operation)
+    return JSONResponse(status_code=code, content=envelope)
 
 
 @router.get("/admin/imports/{import_id}", operation_id="getImport")
@@ -108,8 +112,8 @@ def import_errors(import_id: str, request: Request, db: Annotated[Session, Depen
 def commit_import(import_id: str, body: ImportCommit, request: Request, db: Annotated[Session, Depends(get_db)], principal: Principal = Depends(require_csrf), idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None):
     require_imports(principal); job = db.get(ImportJob, import_id)
     if not job or job.created_by != principal.user.id and principal.user.role != "admin": raise ApiError("NOT_FOUND", 404, "导入任务不存在")
-    if job.state != "validated" or job.validation_version != body.validation_version: raise ApiError("VERSION_CONFLICT", 409, "导入校验结果已变化，请重新校验")
     def operation():
+        if job.state != "validated" or job.validation_version != body.validation_version: raise ApiError("VERSION_CONFLICT", 409, "导入校验结果已变化，请重新校验")
         job.state = "committing"
         for row in job.rows: create_content(db, job.resource, row, principal.user.id)
         job.created_count = len(job.rows); job.state = "committed"; from app.models.base import utcnow; job.finished_at = utcnow()

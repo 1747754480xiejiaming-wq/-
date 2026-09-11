@@ -24,6 +24,7 @@
 | SNAP-20260911-018 | code | 固化后端实施计划与 Python 3.12 依赖，补齐业务 API 的 404、参数校验及未预期异常统一错误 envelope，并忽略本地数据库、虚拟环境和测试缓存 | `pytest backend/tests/contracts/test_envelope.py -q`：4 passed | 本地快照；待推送 |
 | SNAP-20260911-019 | code | 实现 FastAPI/SQLAlchemy/Alembic 后端：四角色会话与权限、茶品批次和来源授权、公开过滤、功效/冲泡/货源、问茶、咨询幂等、内容草稿与审核自动发布、上下架/逻辑删除、账号、线索、审计及 CSV 导入；扩展 OpenAPI 3.1 | 后端 `pytest -q`：25 passed；Alembic upgrade 通过；种子命令连续运行两次无重复 | 本地快照；待推送 |
 | SNAP-20260911-020 | code | 新增前端类型化 API 客户端、DTO 映射和 `VITE_API_BASE_URL` 切换；API 模式加载后端公开批次及冲泡参数，失败时保留原 localStorage 演示，未改变既有路由和后台交互 | 默认 `npm run build` 与设置 API 环境变量后的生产构建均通过 | 本地快照；待推送 |
+| SNAP-20260911-021 | code | 强化登录与写接口来源校验、Cookie/CSRF 防护和并发幂等键兜底；审核、上下架、CSV 导入提交及逻辑删除可在 ETag 或资源状态已变化后按原键精确重放 | 后端 `pytest -q`：28 passed；默认与 API 模式前端生产构建通过 | 随本次提交推送至 GitHub `codex/tea-backend-integration` |
 
 ## 回滚方法
 

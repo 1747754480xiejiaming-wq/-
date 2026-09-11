@@ -16,6 +16,7 @@ GitHub 仓库：<https://github.com/1747754480xiejiaming-wq/->
 - UI 细节：主导航活动指示条已居中文字；茶品详情批次选择已统一为米白、深茶绿风格的自定义菜单并支持键盘操作；首页竖排滚动提示已移入正文左侧留白区；首页茶图和印章已向左收进安全区，与右侧场景进度栏保持稳定间距。
 - 运营规则：草稿置顶；数据运营可删除草稿，项目管理员可删除商品；两者均可按状态互斥地上下架商品。重新上架保留当前版本、无需客户审核人再次授权；演示来源曾被撤回时同步恢复来源状态，确保用户端立即可见。
 - 数据状态：已建立可运行的 FastAPI 模块化后端、SQLite 本地持久化、PostgreSQL 配置入口、Alembic 基线、四角色会话、审核发布状态机、公开过滤、问茶/冲泡、咨询线索、审计与 CSV 导入；资料和规则问答仍明确标识为 `demo`，未接入真实大模型或对象存储。
+- 写入保护：登录、公开写入和后台写入校验可信 `Origin`；Cookie 会话写入同时校验 CSRF；审核、上下架、逻辑删除、CSV 校验/提交等命令支持数据库持久化幂等重放，并与 `If-Match` 乐观锁配合。
 - 前后端切换：前端新增类型化 API 边界；设置 `VITE_API_BASE_URL` 后从后端加载公开茶品及对应冲泡配方，未设置或服务不可用时继续使用原有 localStorage 演示数据，后台原型交互不被改写。
 - 设计画布：Figma 已新增 8 个桌面端与 3 个移动端可编辑网页捕获；Penpot 已建立 7 页备用评审画布，覆盖桌面端、移动端、设计令牌、组件状态与关键流程。
 
@@ -95,7 +96,7 @@ Figma 主文件：[茶序 · 茶文化智能体产品原型](https://www.figma.c
 
 Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71)。本轮 Figma `use_figma` 因 Starter 调用上限受阻，按既定规则改由 Penpot 完成备用画布，并保留回同步清单。
 
-最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-020`。
+最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-021`。
 
 ## 目录结构
 
