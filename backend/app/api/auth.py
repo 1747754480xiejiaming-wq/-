@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Annotated
 from uuid import uuid4
 
@@ -32,6 +33,12 @@ def user_data(user: AdminUser) -> dict:
 @router.get("/csrf", operation_id="getAdminCsrf")
 def csrf(request: Request, response: Response, db: Annotated[Session, Depends(get_db)]):
     settings = request.app.state.settings
+    current_id = request.cookies.get(settings.session_cookie_name)
+    current = db.get(AdminSession, current_id) if current_id else None
+    if current:
+        expires_at = current.expires_at if current.expires_at.tzinfo else current.expires_at.replace(tzinfo=timezone.utc)
+        if expires_at > datetime.now(timezone.utc):
+            return success({"csrf_token": current.csrf_token}, request)
     session = AdminSession(id=new_token(), csrf_token=new_token(), expires_at=new_expiry(settings.session_hours))
     db.add(session)
     db.commit()

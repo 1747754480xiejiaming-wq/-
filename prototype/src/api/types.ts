@@ -8,3 +8,7 @@ export type BrewingPublic={id:string;tea_id:string;tea_item_id?:string|null;titl
 export type Match<T>={requested:{tea_id:string;tea_item_id?:string|null};match_level:'tea_item'|'tea'|'none';fallback_reason?:string|null;record:T|null;notice?:string|null};
 export type AnswerPublic={id:string;status:'answered'|'unconfirmed'|'boundary'|'degraded';answer:string;intent?:'general'|'brewing'|null;tea_id?:string|null;tea_item_id?:string|null;citations:unknown[];reason_code?:string|null};
 export type InquiryReceipt={id:string;status:'new';submitted_at:string;receipt_message:string};
+export type AdminRole='operator'|'reviewer'|'lead'|'admin';
+export type AdminUserPublic={id:string;username:string;display_name:string;role:AdminRole;status:'active'|'disabled';permission_codes:string[];review_domains:string[];must_change_password:boolean;row_version:number;created_at:string;updated_at:string};
+export type AdminLoginResult={user:AdminUserPublic;csrf_token:string};
+export type CsrfResult={csrf_token:string};

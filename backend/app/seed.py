@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.db import create_database_engine, initialize_database, session_factory
-from app.core.security import hash_password
+from app.core.security import hash_password, verify_password
 from app.models.content import ContentRecord, ContentRevision
 from app.models.identity import AdminUser
 
@@ -24,6 +24,8 @@ DEMO_IDS = {
         "longjing-effect", "longjing-brew", "qimen-brew", "offer-longjing", "offer-expired",
     ]
 }
+
+DEMO_PASSWORD = "TeaDemo2026!"
 
 
 def add_content(db: Session, *, name: str, resource: str, title: str, payload: dict, status: str = "published", actor: str = "operator") -> ContentRecord:
@@ -47,14 +49,22 @@ def add_content(db: Session, *, name: str, resource: str, title: str, payload: d
 
 def seed_database(db: Session) -> None:
     users = [
-        ("operator", "数据运营", "operator", ["content:read", "content:write", "content:lifecycle", "imports:write"], []),
-        ("reviewer", "客户审核人", "reviewer", ["content:read", "content:review"], ["tea_content", "supply", "source_rights"]),
-        ("lead", "线索跟进", "lead", ["inquiries:read", "inquiries:write", "inquiries:export"], []),
-        ("admin", "项目管理员", "admin", ["audit:read", "users:write", "inquiries:read_contact"], []),
+        ("operator", "数据运营智能体", "operator", ["content:read", "content:write", "content:lifecycle", "imports:write"], []),
+        ("reviewer", "客户审核智能体", "reviewer", ["content:read", "content:review"], ["tea_content", "supply", "source_rights"]),
+        ("lead", "线索跟进智能体", "lead", ["inquiries:read", "inquiries:write", "inquiries:export"], []),
+        ("admin", "项目管理智能体", "admin", ["audit:read", "users:write", "inquiries:read_contact"], []),
     ]
     for username, display_name, role, permissions, domains in users:
-        if not db.scalar(select(AdminUser).where(AdminUser.username == username)):
-            db.add(AdminUser(id=DEMO_IDS[username], username=username, display_name=display_name, role=role, password_hash=hash_password({"operator": "Operator1234!", "reviewer": "Reviewer1234!", "lead": "LeadFollow1234!", "admin": "ProjectAdmin1234!"}[username]), permission_codes=permissions, review_domains=domains))
+        user = db.scalar(select(AdminUser).where(AdminUser.username == username))
+        if not user:
+            db.add(AdminUser(id=DEMO_IDS[username], username=username, display_name=display_name, role=role, password_hash=hash_password(DEMO_PASSWORD), permission_codes=permissions, review_domains=domains))
+            continue
+        user.display_name = display_name
+        user.role = role
+        user.permission_codes = permissions
+        user.review_domains = domains
+        if not verify_password(user.password_hash, DEMO_PASSWORD):
+            user.password_hash = hash_password(DEMO_PASSWORD)
     db.flush()
 
     now = datetime.now(timezone.utc)

@@ -25,7 +25,8 @@
 | SNAP-20260911-019 | code | 实现 FastAPI/SQLAlchemy/Alembic 后端：四角色会话与权限、茶品批次和来源授权、公开过滤、功效/冲泡/货源、问茶、咨询幂等、内容草稿与审核自动发布、上下架/逻辑删除、账号、线索、审计及 CSV 导入；扩展 OpenAPI 3.1 | 后端 `pytest -q`：25 passed；Alembic upgrade 通过；种子命令连续运行两次无重复 | 已包含于 GitHub `codex/tea-backend-integration` |
 | SNAP-20260911-020 | code | 新增前端类型化 API 客户端、DTO 映射和 `VITE_API_BASE_URL` 切换；API 模式加载后端公开批次及冲泡参数，失败时保留原 localStorage 演示，未改变既有路由和后台交互 | 默认 `npm run build` 与设置 API 环境变量后的生产构建均通过 | 已包含于 GitHub `codex/tea-backend-integration` |
 | SNAP-20260911-021 | code | 强化登录与写接口来源校验、Cookie/CSRF 防护和并发幂等键兜底；审核、上下架、CSV 导入提交及逻辑删除可在 ETag 或资源状态已变化后按原键精确重放 | 后端 `pytest -q`：28 passed；默认与 API 模式前端生产构建通过 | 已包含于 GitHub `codex/tea-backend-integration` |
-| SNAP-20260911-022 | code | 新增非破坏性 PowerShell 一键联调脚本和 T01–T23 验收矩阵，实测迁移、种子、API/Vite、公开目录与脱敏咨询回执，并如实标记生产排除项 | `run-local-integration.ps1 -Seed -Smoke -ApiPort 18001 -FrontendPort 14174` 通过；脚本创建进程已停止、端口已释放 | 随本次提交推送至 GitHub `codex/tea-backend-integration` |
+| SNAP-20260911-022 | code | 新增非破坏性 PowerShell 一键联调脚本和 T01–T23 验收矩阵，实测迁移、种子、API/Vite、公开目录与脱敏咨询回执，并如实标记生产排除项 | `run-local-integration.ps1 -Seed -Smoke -ApiPort 18001 -FrontendPort 14174` 通过；脚本创建进程已停止、端口已释放 | 已包含于 GitHub `codex/tea-backend-integration` |
+| SNAP-20260911-023 | code | 新增四智能体后台登录页；四个后端账号统一演示密码；接入 CSRF 登录、Cookie 会话恢复、退出和角色路由，移除前端身份下拉绕过；补充桌面与移动验收截图 | 后端 `pytest -q`：30 passed；API 模式 `npm run build` 通过；Playwright 验证四账号、刷新恢复、退出、1440×900/390×844，控制台 0 error / 0 warning | 随本次提交推送至 GitHub `codex/tea-backend-integration` |
 
 ## 回滚方法
 

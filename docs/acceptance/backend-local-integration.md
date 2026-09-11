@@ -12,7 +12,9 @@
 
 ## 结论
 
-本地开发闭环已可复现：Alembic 迁移、幂等种子、FastAPI、Vite API 模式、公开目录和咨询提交可一起启动；咨询回执使用正式 envelope 且不回显完整联系方式。后端自动化测试为 **28 passed**，OpenAPI 3.1 静态操作覆盖运行时操作；前端默认模式和 API 模式生产构建均通过。
+本地开发闭环已可复现：Alembic 迁移、幂等种子、FastAPI、Vite API 模式、公开目录和咨询提交可一起启动；咨询回执使用正式 envelope 且不回显完整联系方式。后端自动化测试为 **30 passed**，OpenAPI 3.1 静态操作覆盖运行时操作；前端默认模式和 API 模式生产构建均通过。
+
+后台认证联调已补充验证：四个岗位智能体分别使用 `operator`、`reviewer`、`lead`、`admin` 账号和统一演示密码登录；浏览器刷新可恢复会话，退出返回登录页，各账号只显示自己的工作台导航。1440×900 与 390×844 登录页视觉检查通过，整轮浏览器控制台为 0 error / 0 warning。
 
 这不是生产上线验收。真实模型、对象存储、XLSX、持久导出/后台任务及 PostgreSQL 生产验证仍明确排除，相关接口不会伪造成功。
 
@@ -21,7 +23,7 @@
 ```powershell
 # 后端（实际使用 Python 3.12 隔离环境）
 python -m pytest -q
-# 28 passed, 2 dependency deprecation warnings
+# 30 passed, 2 dependency deprecation warnings
 
 # 前端本地演示模式
 cd prototype
