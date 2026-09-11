@@ -15,7 +15,7 @@ GitHub 仓库：<https://github.com/1747754480xiejiaming-wq/->
 - 响应式：本轮复核 1440×900 桌面七幕和 390×844 移动端；既有 768、390 和 375 宽度业务页面检查继续有效。
 - UI 细节：主导航活动指示条已居中文字；茶品详情批次选择已统一为米白、深茶绿风格的自定义菜单并支持键盘操作；首页竖排滚动提示已移入正文左侧留白区；首页茶图和印章已向左收进安全区，与右侧场景进度栏保持稳定间距。
 - 运营规则：草稿置顶；数据运营可删除草稿，项目管理员可删除商品；两者均可按状态互斥地上下架商品。重新上架保留当前版本、无需客户审核人再次授权；演示来源曾被撤回时同步恢复来源状态，确保用户端立即可见。
-- 数据状态：使用浏览器本机演示数据，尚未接入正式后端、数据库、身份系统或真实大模型。
+- 数据状态：浏览器仍使用本机演示数据；已建立仅供本地联调的 FastAPI 契约服务骨架（`/health/live`、`/api/v1/config`），尚未接入数据库、身份系统或真实大模型，配置明确标识为 `demo`。
 - 设计画布：Figma 已新增 8 个桌面端与 3 个移动端可编辑网页捕获；Penpot 已建立 7 页备用评审画布，覆盖桌面端、移动端、设计令牌、组件状态与关键流程。
 
 ## 快速开始
@@ -27,6 +27,18 @@ cd prototype
 npm ci
 npm run dev
 ```
+
+### 后端契约服务（本地联调骨架）
+
+需要 Python 3.10 或更高版本。此阶段只提供进程存活检查与非生产的公开配置；不会创建数据库或提供真实资料、登录及模型能力。
+
+```powershell
+cd backend
+python -m pip install -e ".[dev]"
+python -m uvicorn app.main:app --port 8000
+```
+
+健康检查：<http://127.0.0.1:8000/health/live>，预期仅返回 `{"status":"ok"}`。公开配置入口为 <http://127.0.0.1:8000/api/v1/config>，所有业务 API 将固定在 `/api/v1` 下；机器可读契约见 [`contracts/openapi.yaml`](contracts/openapi.yaml)。
 
 打开：
 
@@ -55,6 +67,8 @@ npm run build
 |---|---|
 | 前端原型说明 | [`prototype/README.md`](prototype/README.md) |
 | 前后端接口契约与 Skill 清单 | [`茶文化智能体_前后端接口契约与Skill清单.md`](茶文化智能体_前后端接口契约与Skill清单.md) |
+| 机器可读 API 契约 | [`contracts/openapi.yaml`](contracts/openapi.yaml) |
+| 后端服务 | [`backend/`](backend/) |
 | 浏览器验收记录 | [`prototype/验收记录.md`](prototype/验收记录.md) |
 | 首页滚动与问茶冲泡融合设计 | [`docs/superpowers/specs/2026-09-10-home-scroll-qa-brewing-design.md`](docs/superpowers/specs/2026-09-10-home-scroll-qa-brewing-design.md) |
 | 沉浸式 Sticky 滚动首页设计 | [`docs/superpowers/specs/2026-09-11-envision-scroll-home-design.md`](docs/superpowers/specs/2026-09-11-envision-scroll-home-design.md) |
@@ -75,6 +89,8 @@ Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot
 
 ```text
 prototype/             React + TypeScript + Vite 交互原型
+backend/               FastAPI 本地契约服务（当前仅健康检查和公开配置）
+contracts/             OpenAPI v1 机器可读契约
 design-snapshots/      Figma/Penpot 画布版本清单
 output/playwright/     桌面、平板和移动端验收截图
 work/figma-prototype/  Figma 构建脚本与状态记录

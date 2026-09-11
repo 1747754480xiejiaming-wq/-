@@ -1,0 +1,220 @@
+openapi: 3.1.0
+info:
+  title: Tea Sequence API
+  version: 1.0.0
+  description: >-
+    Stable v1 contract for Tea Sequence. The initial configuration response
+    explicitly describes non-production demonstration mode.
+servers:
+  - url: http://127.0.0.1:8000
+paths:
+  /health/live:
+    get:
+      operationId: getLiveHealth
+      summary: Check whether the API process is live
+      responses:
+        '200':
+          description: The process is running.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiveHealth'
+              example:
+                status: ok
+  /api/v1/config:
+    get:
+      operationId: getPublicConfig
+      summary: Get public client configuration
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Public configuration in the success envelope.
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessConfig'
+              example:
+                data:
+                  data_mode: demo
+                  tea_categories: []
+                  inquiry_notice:
+                    version: demo-2026-09
+                    text: 提交咨询即表示同意我们仅为本次咨询跟进使用您的联系方式。
+                    purpose: inquiry_followup
+                  health_notice:
+                    version: demo-2026-09
+                    text: 本服务不提供医疗诊断或治疗建议。
+                  capabilities:
+                    qa: false
+                meta:
+                  request_id: 82e21652-57e3-4142-951a-0cbb0f6f8d74
+                  server_time: '2026-09-11T00:00:00Z'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  securitySchemes:
+    AdminSessionCookie:
+      type: apiKey
+      in: cookie
+      name: tea_sequence_session
+      description: HttpOnly administrator session cookie for later admin operations.
+  parameters:
+    RequestId:
+      name: X-Request-ID
+      in: header
+      required: false
+      description: Optional client request correlation UUID; the server generates one when absent.
+      schema:
+        type: string
+        format: uuid
+    CsrfToken:
+      name: X-CSRF-Token
+      in: header
+      required: false
+      description: Required by later cookie-authenticated state-changing operations.
+      schema:
+        type: string
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Required by later state-changing operations; must be a UUID.
+      schema:
+        type: string
+        format: uuid
+  headers:
+    RequestId:
+      description: Server-assigned request correlation UUID.
+      schema:
+        type: string
+        format: uuid
+  responses:
+    InternalError:
+      description: An unexpected error in the standard failure envelope.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    LiveHealth:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          const: ok
+    TeaCategory:
+      type: object
+      additionalProperties: false
+      required: [code, label]
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+    InquiryNotice:
+      type: object
+      additionalProperties: false
+      required: [version, text, purpose]
+      properties:
+        version:
+          type: string
+        text:
+          type: string
+        purpose:
+          type: string
+          const: inquiry_followup
+    HealthNotice:
+      type: object
+      additionalProperties: false
+      required: [version, text]
+      properties:
+        version:
+          type: string
+        text:
+          type: string
+    ConfigCapabilities:
+      type: object
+      additionalProperties: false
+      required: [qa]
+      properties:
+        qa:
+          type: boolean
+    PublicConfig:
+      type: object
+      additionalProperties: false
+      required: [data_mode, tea_categories, inquiry_notice, health_notice, capabilities]
+      properties:
+        data_mode:
+          type: string
+          const: demo
+          description: This initial service exposes demonstration-only configuration.
+        tea_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeaCategory'
+        inquiry_notice:
+          $ref: '#/components/schemas/InquiryNotice'
+        health_notice:
+          $ref: '#/components/schemas/HealthNotice'
+        capabilities:
+          $ref: '#/components/schemas/ConfigCapabilities'
+    ResponseMeta:
+      type: object
+      additionalProperties: false
+      required: [request_id, server_time]
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        server_time:
+          type: string
+          format: date-time
+    ErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+    ApiErrorBody:
+      type: object
+      additionalProperties: false
+      required: [code, message, details]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+    SuccessConfig:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          $ref: '#/components/schemas/PublicConfig'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error, meta]
+      properties:
+        error:
+          $ref: '#/components/schemas/ApiErrorBody'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
