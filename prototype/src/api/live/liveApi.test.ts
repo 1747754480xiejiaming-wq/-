@@ -54,4 +54,15 @@ describe('live API endpoint mapping', () => {
     await api.updateLead({ id: 'lead-1', status: 'contacted', note: '已联系', ifMatch: 'rv-1', idempotencyKey: 'lead-1' });
     expect(request).toHaveBeenLastCalledWith({ path: '/admin/inquiries/lead-1', method: 'PATCH', body: { status: 'contacted', note: '已联系' }, csrf: 'csrf-2', ifMatch: 'rv-1', idempotencyKey: 'lead-1' });
   });
+
+  it('maps login through the pre-login CSRF boundary and stores the rotated token', async () => {
+    const { client, request } = fakeClient();
+    request.mockResolvedValue({ user: { id: 'operator-1', permission_codes: ['content:read', 'content:write'], review_domains: [] }, csrf_token: 'csrf-rotated' });
+    const setCsrf = vi.fn();
+    const api = createLiveAdminApi(client, async () => 'csrf-prelogin', vi.fn(), setCsrf);
+
+    await expect(api.login({ username: 'operator', password: 'correct-password' })).resolves.toMatchObject({ role: 'operator' });
+    expect(request).toHaveBeenCalledWith({ path: '/admin/auth/login', method: 'POST', body: { username: 'operator', password: 'correct-password' }, csrf: 'csrf-prelogin' });
+    expect(setCsrf).toHaveBeenCalledWith('csrf-rotated');
+  });
 });

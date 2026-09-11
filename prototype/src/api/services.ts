@@ -7,6 +7,7 @@ export type BrewingRecipe = { tea_id: string; tea_item_id?: string; vessel: stri
 export type QuestionResult = { status: 'answered' | 'unconfirmed' | 'boundary' | 'degraded'; text: string; intent?: 'brewing'; tea_item_id?: string; tea_id?: string };
 export type InquiryInput = { tea_item_id: string; kind: 'consultation' | 'sample'; contact_channel: 'phone' | 'email'; contact: string; need: string; consent_version: string; consented: boolean };
 export type TeaItemQuery = { tea_id?: string; sku?: string; batch_code?: string; page?: number; page_size?: number };
+export type LoginInput = { username: string; password: string };
 
 export interface PublicApi {
   getConfig(): Promise<PublicConfig>;
@@ -19,6 +20,8 @@ export interface PublicApi {
 }
 
 export interface AdminApi {
+  login(input: LoginInput): Promise<AdminUser>;
+  logout(): Promise<void>;
   getMe(): Promise<AdminUser>;
   setDemoRole(role: import('../model').Role): Promise<AdminUser>;
   getContent(id: string): Promise<ContentDetail<TeaItem>>;

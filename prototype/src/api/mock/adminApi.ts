@@ -1,6 +1,7 @@
 import type { Lead, Role, TeaItem } from '../../model';
 import { ApiError } from '../errors';
 import type { AdminUser, ContentCommand, ContentCreate, ContentDetail, ContentEditCommand, ContentQuery, ContentSummary, ExportJob, LeadCommand, LeadDetail, LeadQuery, ReviewCommand, SubmitReviewCommand } from '../types';
+import type { LoginInput } from '../services';
 import { MockStore } from './mockStore';
 
 const permissions: Record<Role, string[]> = {
@@ -14,10 +15,19 @@ const detail = (item: TeaItem, author_id = item.id === 'qimen-draft' ? 'author-1
 const leadDetail = (lead: Lead, version: number): LeadDetail => ({ ...lead, row_version: version, etag: `rv-${version}` });
 
 export class MockAdminApi {
-  constructor(private readonly store: MockStore, private role: Role, private userId: string) {}
+  constructor(private readonly store: MockStore, private role: Role, private userId: string, private authenticated = true) {}
 
-  async getMe(): Promise<AdminUser> { return { id: this.userId, role: this.role, permission_codes: permissions[this.role], review_domains: this.role === 'reviewer' ? ['tea_content'] : [] }; }
-  async setDemoRole(role: Role): Promise<AdminUser> { this.role = role; this.userId = `${role}-1`; return this.getMe(); }
+  private requireSession() { if (!this.authenticated) throw fail(401, 'UNAUTHENTICATED', '用户名或密码不正确'); }
+  async login(input: LoginInput): Promise<AdminUser> {
+    if (input.username !== 'demo' || input.password !== 'demo123456') throw fail(401, 'UNAUTHENTICATED', '用户名或密码不正确');
+    this.authenticated = true;
+    this.role = 'operator';
+    this.userId = 'operator-1';
+    return this.getMe();
+  }
+  async logout() { this.authenticated = false; }
+  async getMe(): Promise<AdminUser> { this.requireSession(); return { id: this.userId, role: this.role, permission_codes: permissions[this.role], review_domains: this.role === 'reviewer' ? ['tea_content'] : [] }; }
+  async setDemoRole(role: Role): Promise<AdminUser> { this.requireSession(); this.role = role; this.userId = `${role}-1`; return this.getMe(); }
 
   async getContent(id: string) {
     const item = this.store.snapshot().items.find(value => value.id === id);

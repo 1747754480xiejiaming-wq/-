@@ -9,7 +9,7 @@ export type AppServices = { publicApi: PublicApi; adminApi: AdminApi; mode: Runt
 
 export const createServices = (config: RuntimeConfig): AppServices => {
   if (config.mode === 'mock') {
-    const mock = createMockServices({ role: 'operator', userId: 'operator-1' });
+    const mock = createMockServices({ role: 'operator', userId: 'operator-1', authenticated: false });
     return { publicApi: mock.publicApi, adminApi: mock.admin, mode: 'mock' };
   }
   const client = new ApiClient({ baseUrl: config.baseUrl });
@@ -21,5 +21,6 @@ export const createServices = (config: RuntimeConfig): AppServices => {
     return csrf;
   };
   const clearCsrf = () => { csrf = ''; };
-  return { publicApi: createLivePublicApi(client), adminApi: createLiveAdminApi(client, getCsrf, clearCsrf), mode: 'live' };
+  const setCsrf = (token: string) => { csrf = token; };
+  return { publicApi: createLivePublicApi(client), adminApi: createLiveAdminApi(client, getCsrf, clearCsrf, setCsrf), mode: 'live' };
 };

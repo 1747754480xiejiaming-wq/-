@@ -2,6 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { createMockServices } from './createMockServices';
 
 describe('mock API state machine', () => {
+  it('requires the demo login before exposing the admin session', async () => {
+    const { admin } = createMockServices({ authenticated: false });
+    await expect(admin.getMe()).rejects.toMatchObject({ status: 401, code: 'UNAUTHENTICATED' });
+    await expect(admin.login({ username: 'demo', password: 'wrong' })).rejects.toMatchObject({ status: 401, code: 'UNAUTHENTICATED' });
+    await expect(admin.login({ username: 'demo', password: 'demo123456' })).resolves.toMatchObject({ role: 'operator' });
+    await admin.logout();
+    await expect(admin.getMe()).rejects.toMatchObject({ status: 401, code: 'UNAUTHENTICATED' });
+  });
+
   it('hides withdrawn tea items and restores the public item on relist', async () => {
     const { admin, publicApi } = createMockServices();
     const item = await admin.getContent('longjing-2026');

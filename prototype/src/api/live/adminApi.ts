@@ -3,6 +3,7 @@ import { ApiClient } from '../client';
 import type { Page } from '../contracts';
 import { ApiError } from '../errors';
 import type { AdminApi } from '../services';
+import type { LoginInput } from '../services';
 import type { AdminUser, ContentCommand, ContentCreate, ContentDetail, ContentEditCommand, ContentQuery, ContentSummary, ExportJob, LeadCommand, LeadDetail, LeadQuery, ReviewCommand, SubmitReviewCommand } from '../types';
 
 type AdminUserTransport = { id: string; permission_codes: string[]; review_domains: string[] };
@@ -24,7 +25,7 @@ const fromLead = (lead: InquirySummaryTransport | InquiryDetailTransport): LeadD
   etag: `rv-${lead.row_version}`
 });
 
-export const createLiveAdminApi = (client: ApiClient, getCsrf: () => Promise<string>, clearCsrf: () => void = () => undefined): AdminApi => {
+export const createLiveAdminApi = (client: ApiClient, getCsrf: () => Promise<string>, clearCsrf: () => void = () => undefined, setCsrf: (token: string) => void = () => undefined): AdminApi => {
   const command = async <T>(input: Parameters<ApiClient['request']>[0]) => {
     try {
       return await client.request<T>({ ...input, csrf: await getCsrf() });
@@ -35,6 +36,12 @@ export const createLiveAdminApi = (client: ApiClient, getCsrf: () => Promise<str
   };
   const getMe = async () => fromUser(await client.request<AdminUserTransport>({ path: '/admin/auth/me' }));
   return {
+    login: async (input: LoginInput) => {
+      const payload = await client.request<{ user: AdminUserTransport; csrf_token: string }>({ path: '/admin/auth/login', method: 'POST', body: input, csrf: await getCsrf() });
+      setCsrf(payload.csrf_token);
+      return fromUser(payload.user);
+    },
+    logout: async () => { await command<void>({ path: '/admin/auth/logout', method: 'POST' }); clearCsrf(); },
     getMe,
     setDemoRole: () => getMe(),
     getContent: id => client.request<ContentDetail<TeaItem>>({ path: `/admin/content/tea-items/${id}` }),
