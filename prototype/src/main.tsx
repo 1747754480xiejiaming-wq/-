@@ -4,6 +4,8 @@ import {Context,TeaItem,Lead,Audit,Role,seedItems,seedLeads,roleNames,url,goto} 
 import {Icon,Button,Badge,Modal,Empty} from './ui';
 import {Home,Catalog,TeaDetail,Questions,Inquiry,Receipt} from './PublicPages';
 import {Overview,Content,EditContent,Review,Imports,Leads,Users,AuditPage} from './AdminPages';
+import {mapTeaItem} from './api/mapper';
+import {teaApi} from './api/runtime';
 import './styles.css';
 import './HomeExperience.css';
 
@@ -14,6 +16,7 @@ function App(){const [hash,setHash]=useState(captureHash);const [items,setItems]
 useEffect(()=>{const h=()=>{setHash(captureHash());setMobileNav(false);window.scrollTo(0,0)};addEventListener('hashchange',h);return()=>removeEventListener('hashchange',h)},[]);
 useEffect(()=>{try{localStorage.setItem(prefix+'items',JSON.stringify(items));localStorage.setItem(prefix+'leads',JSON.stringify(leads));localStorage.setItem(prefix+'source',JSON.stringify(sourceActive));localStorage.setItem(prefix+'audit',JSON.stringify(audit.slice(0,150)))}catch{}},[items,leads,sourceActive,audit]);
 useEffect(()=>{if(!message)return;const t=setTimeout(()=>setMessage(''),4500);return()=>clearTimeout(t)},[message]);
+useEffect(()=>{const api=teaApi;if(!api)return;let active=true;Promise.all([api.config(),api.listItems()]).then(async([,page])=>{const mapped=await Promise.all(page.items.map(async dto=>{try{return mapTeaItem(dto,(await api.brewing(dto.tea_id,dto.id)).record)}catch{return mapTeaItem(dto)}}));if(active){setItems(current=>[...mapped,...current.filter(item=>item.status!=='published')]);setSourceActive(true)}}).catch(()=>{if(active)setMessage('后端联调服务不可用，已保留本机演示数据')});return()=>{active=false}},[]);
 const toast=useCallback((s:string)=>setMessage(s),[]);const record=useCallback((action:string,object:string)=>setAudit(a=>[{id:crypto.randomUUID(),action,object,role:roleNames[role],time:new Date().toLocaleString('zh-CN')},...a]),[role]);const reset=()=>{setItems(structuredClone(seedItems));setLeads(structuredClone(seedLeads));setSourceActive(true);setAudit([{id:crypto.randomUUID(),action:'重置演示数据',object:'本地工作区',role:roleNames[role],time:new Date().toLocaleString('zh-CN')}]);setReceipt(null);setShowReset(false);toast('演示数据已恢复初始状态');goto('/')};const closeReset=useCallback(()=>setShowReset(false),[]);
 const path=hash.replace(/^#/,'').split('?')[0],parts=path.split('/').filter(Boolean),admin=parts[0]==='admin',routeParams=new URLSearchParams(hash.split('?')[1]||'');
 let page:React.ReactNode;

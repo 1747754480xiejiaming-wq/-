@@ -1,0 +1,10 @@
+export type Success<T>={data:T;meta:{request_id:string;server_time:string}};
+export type ApiFailure={error:{code:string;message:string;details:{field?:string;reason?:string}[]};meta:{request_id:string;server_time:string}};
+export type Page<T>={items:T[];page:number;page_size:number;total:number};
+export type PublicConfig={data_mode:'demo'|'live';tea_categories:{code:string;label:string}[];inquiry_notice:{version:string;text:string;purpose:'inquiry_followup'};health_notice:{version:string;text:string};capabilities:{qa:boolean}};
+export type PublicVersion={revision:number;published_at:string;updated_at:string;reviewer_label:string};
+export type TeaItemPublic={id:string;legacy_id?:string;tea_id:string;sku:string;batch_code:string;name:string;grade:string;year:number;specification:string;storage:string;shelf_life_months?:number|null;images:unknown[];subtitle?:string;taste?:string[];price?:string;description?:string;version:PublicVersion};
+export type BrewingPublic={id:string;tea_id:string;tea_item_id?:string|null;title:string;vessel:string;water_ml:{min:number;max:number};tea_g:{min:number;max:number};temperature_c:{min:number;max:number};steps:{step_no:number;title:string;instruction:string;duration_seconds:number}[];version:PublicVersion};
+export type Match<T>={requested:{tea_id:string;tea_item_id?:string|null};match_level:'tea_item'|'tea'|'none';fallback_reason?:string|null;record:T|null;notice?:string|null};
+export type AnswerPublic={id:string;status:'answered'|'unconfirmed'|'boundary'|'degraded';answer:string;intent?:'general'|'brewing'|null;tea_id?:string|null;tea_item_id?:string|null;citations:unknown[];reason_code?:string|null};
+export type InquiryReceipt={id:string;status:'new';submitted_at:string;receipt_message:string};

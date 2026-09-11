@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 
 export type ItemStatus = 'published' | 'draft' | 'pending_review' | 'approved' | 'withdrawn';
 export type Role = 'operator' | 'reviewer' | 'lead' | 'admin';
-export type TeaItem = { id:string; teaId:string; name:string; subtitle:string; category:'绿茶'|'红茶'; origin:string; sku:string; batch:string; year:number; taste:string[]; water:number; seconds:number; grams:number; vessel:string; status:ItemStatus; revision:number; draftStatus?:Exclude<ItemStatus,'published'|'withdrawn'>; draftNote?:string; offer:'valid'|'expired'|'unavailable'; specific:boolean; price:string; description:string };
+export type TeaItem = { id:string; serverId?:string; teaId:string; serverTeaId?:string; name:string; subtitle:string; category:'绿茶'|'红茶'; origin:string; sku:string; batch:string; year:number; taste:string[]; water:number; seconds:number; grams:number; vessel:string; status:ItemStatus; revision:number; draftStatus?:Exclude<ItemStatus,'published'|'withdrawn'>; draftNote?:string; offer:'valid'|'expired'|'unavailable'; specific:boolean; price:string; description:string };
 export type Lead = {id:string; name:string; contact:string; item:string; kind:string; status:'new'|'assigned'|'contacted'|'closed'; date:string; note:string};
 export type Audit = {id:string; action:string; object:string; role:string; time:string};
 export const roleNames:Record<Role,string>={operator:'数据运营',reviewer:'客户审核人',lead:'线索跟进',admin:'项目管理员'};
