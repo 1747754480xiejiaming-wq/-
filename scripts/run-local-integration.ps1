@@ -1,8 +1,10 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$PythonExecutable = "python",
     [switch]$Seed,
     [switch]$Smoke,
+    [switch]$InstallDependencies,
+    [switch]$OpenBrowser,
     [ValidateRange(1, 65535)]
     [int]$ApiPort = 8000,
     [ValidateRange(1, 65535)]
@@ -20,6 +22,18 @@ $apiBaseUrl = "$apiOrigin/api/v1"
 $apiProcess = $null
 $frontendProcess = $null
 
+function Test-HttpReady {
+    param([Parameter(Mandatory = $true)][string]$Url)
+
+    try {
+        $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 2
+        return $response.StatusCode -eq 200
+    }
+    catch {
+        return $false
+    }
+}
+
 function Resolve-Executable {
     param([Parameter(Mandatory = $true)][string]$Name)
 
@@ -31,6 +45,57 @@ function Resolve-Executable {
         throw "找不到必需命令：$Name"
     }
     return $command.Source
+}
+
+function Get-PythonVersion {
+    param([Parameter(Mandatory = $true)][string]$Executable)
+
+    try {
+        $versionText = (& $Executable -c 'import sys; print(chr(46).join(map(str, sys.version_info[:3])))').Trim()
+        return [version]$versionText
+    }
+    catch {
+        return $null
+    }
+}
+
+function Resolve-Python312 {
+    param([Parameter(Mandatory = $true)][string]$Preferred)
+
+    $candidates = New-Object System.Collections.Generic.List[string]
+    $projectPython = Join-Path $backendPath ".venv\Scripts\python.exe"
+    if (Test-Path -LiteralPath $projectPython -PathType Leaf) {
+        $candidates.Add($projectPython)
+    }
+    if ($Preferred) {
+        try { $candidates.Add((Resolve-Executable -Name $Preferred)) } catch {}
+    }
+    $bundledPython = Join-Path $env:USERPROFILE ".cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
+    if (Test-Path -LiteralPath $bundledPython -PathType Leaf) {
+        $candidates.Add($bundledPython)
+    }
+
+    foreach ($candidate in ($candidates | Select-Object -Unique)) {
+        $version = Get-PythonVersion -Executable $candidate
+        if ($version -and $version -ge [version]"3.12") {
+            return $candidate
+        }
+    }
+    throw "找不到 Python 3.12 或更高版本。请安装 Python 3.12，或从 Codex 桌面应用内运行本入口。"
+}
+
+function Test-BackendDependencies {
+    param([Parameter(Mandatory = $true)][string]$Executable)
+
+    $previousPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "SilentlyContinue"
+        & $Executable -c "import fastapi, sqlalchemy, uvicorn, alembic" *> $null
+        return $LASTEXITCODE -eq 0
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
+    }
 }
 
 function Assert-PortAvailable {
@@ -64,7 +129,39 @@ function Wait-HttpReady {
     throw "$Name 未在预期时间内就绪：$Url"
 }
 
-$resolvedPython = Resolve-Executable -Name $PythonExecutable
+$frontendAlreadyReady = Test-HttpReady -Url $frontendOrigin
+$backendAlreadyReady = Test-HttpReady -Url "$apiOrigin/health/ready"
+if ($frontendAlreadyReady -and $backendAlreadyReady) {
+    Write-Host "本地联调服务已经运行："
+    Write-Host "  用户端：$frontendOrigin/"
+    Write-Host "  管理后台：$frontendOrigin/#/admin"
+    Write-Host "  API 文档：$apiOrigin/docs"
+    if ($OpenBrowser) {
+        Start-Process -FilePath "$frontendOrigin/"
+    }
+    return
+}
+
+$resolvedPython = Resolve-Python312 -Preferred $PythonExecutable
+$projectPython = Join-Path $backendPath ".venv\Scripts\python.exe"
+if ($InstallDependencies -and -not (Test-BackendDependencies -Executable $resolvedPython)) {
+    if (-not (Test-Path -LiteralPath $projectPython -PathType Leaf)) {
+        Write-Host "首次运行：正在创建 Python 3.12 虚拟环境…"
+        & $resolvedPython -m venv (Join-Path $backendPath ".venv")
+        if ($LASTEXITCODE -ne 0) {
+            throw "创建后端虚拟环境失败。"
+        }
+    }
+    $resolvedPython = $projectPython
+    Write-Host "首次运行：正在安装后端依赖…"
+    & $resolvedPython -m pip install -e $backendPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "安装后端依赖失败，请检查网络后重新双击入口。"
+    }
+}
+if (-not (Test-BackendDependencies -Executable $resolvedPython)) {
+    throw "后端依赖尚未安装；请使用一键入口，或先运行 python -m pip install -e backend。"
+}
 $npmCommand = Get-Command "npm.cmd" -ErrorAction SilentlyContinue
 if (-not $npmCommand) {
     $npmCommand = Get-Command "npm" -ErrorAction SilentlyContinue
@@ -76,12 +173,25 @@ $resolvedNpm = $npmCommand.Source
 $resolvedNode = Resolve-Executable -Name "node"
 $viteEntrypoint = Join-Path $prototypePath "node_modules\vite\bin\vite.js"
 if (-not (Test-Path -LiteralPath $viteEntrypoint -PathType Leaf)) {
-    throw "前端依赖尚未安装；请先在 prototype 目录运行 npm ci。"
+    if (-not $InstallDependencies) {
+        throw "前端依赖尚未安装；请先在 prototype 目录运行 npm ci。"
+    }
+    Write-Host "首次运行：正在安装前端依赖…"
+    Push-Location $prototypePath
+    try {
+        & $resolvedNpm ci
+        if ($LASTEXITCODE -ne 0) {
+            throw "安装前端依赖失败，请检查网络后重新双击入口。"
+        }
+    }
+    finally {
+        Pop-Location
+    }
 }
 
-$pythonVersionText = (& $resolvedPython -c 'import sys; print(".".join(map(str, sys.version_info[:3])))').Trim()
-if ([version]$pythonVersionText -lt [version]"3.12") {
-    throw "需要 Python 3.12 或更高版本，当前为 $pythonVersionText"
+$pythonVersion = Get-PythonVersion -Executable $resolvedPython
+if (-not $pythonVersion -or $pythonVersion -lt [version]"3.12") {
+    throw "需要 Python 3.12 或更高版本，当前解释器不符合要求。"
 }
 $nodeVersionText = (& $resolvedNode --version).Trim().TrimStart("v")
 if ([version]$nodeVersionText -lt [version]"22.0") {
@@ -177,6 +287,9 @@ try {
     Write-Host "  API PID：$($apiProcess.Id)"
     Write-Host "  前端 PID：$($frontendProcess.Id)"
     Write-Host "完成后可只停止本脚本创建的进程：Stop-Process -Id $($apiProcess.Id),$($frontendProcess.Id)"
+    if ($OpenBrowser) {
+        Start-Process -FilePath "$frontendOrigin/"
+    }
 }
 catch {
     if ($frontendProcess -and -not $frontendProcess.HasExited) {

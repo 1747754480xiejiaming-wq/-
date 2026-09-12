@@ -30,6 +30,7 @@
 | SNAP-20260911-024 | full | 以后端开发工作区为唯一基线，归档旧前端历史，并同步远程 `main` 与前端开发工作区 | 双工作区提交及关键文件哈希一致；后端测试、API 模式前端构建、远程分支核验通过 | 已推送至 GitHub `main`、`codex/tea-backend-integration`；旧前端历史保存在 `archive/frontend-before-backend-sync-20260911` |
 | SNAP-20260911-025 | code | 在后端统一基线上恢复公共子页面导航：桌面顶部与移动底部改为首页、问茶、茶叶品类、工作台；商品入口连接 `#/catalog`，工作台复用现有 `#/admin` 后端登录页 | `npm run build` 通过；Edge Chromium 验证桌面与 390×844 移动导航、商品总览和工作台登录入口，控制台 0 error / 0 warning | 随本次提交推送至 GitHub `main`、`codex/tea-backend-integration` |
 | SNAP-20260911-026 | code | 将首页茶史四幕扩展为 3 + 3 + 2 的八页完整时间线，总场景增至十一幕；桌面工作台改为右上角低强调按钮并连接 `#/admin`，登录页新增返回用户端入口 | `npm run build` 通过；Edge Chromium 验证 1440×900 十一幕、390×844 八个茶史区块与无横向溢出、工作台进入及返回链路；控制台 0 error / 0 warning | 随本次提交推送至 GitHub `main`、`codex/tea-backend-integration` |
+| SNAP-20260912-027 | code | 新增根目录 Windows 一键启动入口；自动发现 Python 3.12、首次创建后端虚拟环境并安装缺失依赖、执行迁移与种子、启动 API/Vite 并打开默认浏览器；重复点击可复用已运行服务 | 实际双击链路完成首次依赖安装与迁移；API `/health/ready`、公开配置与目录、前端首页均返回 200；重复运行直接打开网站；`npm run build` 通过 | 随本次提交推送至 GitHub `main`、`codex/tea-backend-integration` |
 
 ## 回滚方法
 

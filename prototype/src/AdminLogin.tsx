@@ -49,7 +49,7 @@ export function AdminLogin({checking=false,apiEnabled,onLogin}:{checking?:boolea
           </div>
           <label className="field login-password">统一演示密码<input type="password" autoComplete="current-password" value={password} onChange={event=>setPassword(event.target.value)} aria-invalid={!!error} disabled={!apiEnabled||busy}/><small>四个账号使用同一个本地演示密码：<code>{DEMO_PASSWORD}</code></small></label>
           {error&&<p className="login-error" role="alert"><Icon name="info" size={17}/>{error}</p>}
-          {!apiEnabled&&<p className="login-error" role="alert"><Icon name="info" size={17}/>尚未配置后端地址，请使用一键联调脚本启动服务。</p>}
+          {!apiEnabled&&<p className="login-error" role="alert"><Icon name="info" size={17}/>尚未配置后端地址，请双击仓库根目录的“一键启动本地测试.cmd”。</p>}
           <Button type="submit" disabled={!apiEnabled||busy||!password} icon="arrow">{busy?'正在登录…':`进入${account.title}`}</Button>
         </form>}
         <div className="login-boundary"><Icon name="shield" size={16}/><span>当前为本地演示环境；Cookie 会话、CSRF 与岗位权限均由后端校验。</span></div>
