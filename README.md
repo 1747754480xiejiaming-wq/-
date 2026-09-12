@@ -6,12 +6,12 @@ GitHub 仓库：<https://github.com/1747754480xiejiaming-wq/->
 
 版本状态：后端开发工作区现为代码与界面的唯一基线；`main`、`codex/tea-backend-integration` 以及前后端两个开发任务将同步到同一提交。覆盖前的旧前端历史完整保存在 `archive/frontend-before-backend-sync-20260911`，可用于恢复。后续每次代码或画布更新都会同步维护本 README、快照记录并推送。
 
-![茶序八页茶史时间线与工作台入口](output/playwright/26-history-timeline-workbench-desktop.png)
+![茶序茶史图片背景桌面效果](output/playwright/28-history-backgrounds-desktop.png)
 
 ## 当前进度
 
 - 工作区同步：登录页和管理后台以后端开发任务中的四智能体实现为准，前端开发任务不再保留另一套 `LoginPage`、mock/live service 或后台页面实现。
-- 用户端：首页已升级为十一幕沉浸式滚动叙事，依次呈现首页、茶史八页、茶叶品类、参考资料与联系我们；茶史采用“起源与利用 3 页 + 茶事与交流 3 页 + 制茶与分类 2 页”的完整结构。桌面使用 Sticky 原生滚动、滚动停止自动吸附和单幕互斥显示，移动端使用真实文档流和纵向邻近吸附。检索与筛选、茶品和批次档案、功效与资料来源、问茶与分步冲泡联动、货源、咨询和脱敏回执均可交互。
+- 用户端：首页已升级为十一幕沉浸式滚动叙事，依次呈现首页、茶史八页、茶叶品类、参考资料与联系我们；茶史采用“起源与利用 3 页 + 茶事与交流 3 页 + 制茶与分类 2 页”的完整结构。网页第 2–9 页已按 `1.png` 至 `8.png` 的文件名顺序换为八张全屏图片背景，并使用深茶绿渐变保证文字可读性；原始约 20 MB PNG 已转换为合计约 1.84 MB 的 WebP。桌面使用 Sticky 原生滚动、滚动停止自动吸附和单幕互斥显示，移动端使用真实文档流和纵向邻近吸附。检索与筛选、茶品和批次档案、功效与资料来源、问茶与分步冲泡联动、货源、咨询和脱敏回执均可交互。
 - 公共导航：桌面顶部文字导航为“首页 / 问茶 / 茶叶品类”，右上角提供低强调“工作台”按钮；移动底部继续保留“首页 / 问茶 / 茶叶品类 / 工作台”。“问茶”进入 `#/qa`，“茶叶品类”进入商品总览 `#/catalog`，“工作台”进入 `#/admin`，并由登录页调用后端 CSRF 与登录接口。
 - 管理后台：新增真实登录界面，数据运营、客户审核、线索跟进和项目管理四个智能体分别对应 `operator`、`reviewer`、`lead`、`admin` 后端账号；登录态、CSRF 与岗位权限由后端确认。四套职能前端继续独立展示，审核通过自动发布，数据运营和项目管理员可直接上下架商品。
 - 响应式：本轮复核 1440×900 桌面十一幕和 390×844 移动端八页茶史；移动页面 `scrollWidth` 与视口同为 390px，既有 768、390 和 375 宽度业务页面检查继续有效。
@@ -123,6 +123,7 @@ npm run build
 | 设计画布工作流 | [`prototype/设计画布工作流.md`](prototype/设计画布工作流.md) |
 | Figma 状态 | [`work/figma-prototype/state.json`](work/figma-prototype/state.json) |
 | 设计快照 | [`design-snapshots/`](design-snapshots/) |
+| 茶史背景转换脚本 | [`work/convert-tea-history-images.mjs`](work/convert-tea-history-images.mjs) |
 | 页面验收截图 | [`output/playwright/`](output/playwright/) |
 | 版本快照记录 | [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) |
 
@@ -130,7 +131,7 @@ Figma 主文件：[茶序 · 茶文化智能体产品原型](https://www.figma.c
 
 Penpot 备用文件：[茶序 · 前端原型备份画布](https://design.penpot.app/#/workspace?team-id=40e06342-8830-80d6-8008-9dca1ec2817d&file-id=c828d3cf-7d4e-8145-8008-9dcadfc52fa0&page-id=2fd4944b-225d-804f-8008-9dccb0930c71)。本轮 Figma `use_figma` 因 Starter 调用上限受阻，按既定规则改由 Penpot 完成备用画布，并保留回同步清单。
 
-最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260911-026`。
+最新画布快照见 [`design-snapshots/20260910-002-figma-penpot-pages.json`](design-snapshots/20260910-002-figma-penpot-pages.json)；最新项目快照见 [`VERSION_SNAPSHOTS.md`](VERSION_SNAPSHOTS.md) 中的 `SNAP-20260912-028`。
 
 ## 目录结构
 

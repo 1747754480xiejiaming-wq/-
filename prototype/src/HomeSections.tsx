@@ -5,18 +5,18 @@ import {Badge,Button,Icon,TeaArt} from './ui';
 export type SceneId='home'|'history-origin-cover'|'history-origin-discovery'|'history-origin-tang-song'|'history-exchange-cover'|'history-exchange-gathering'|'history-exchange-journey'|'history-craft-cover'|'history-craft-categories'|'categories'|'references-contact';
 export type SceneTone='light'|'deep'|'warm';
 export type NavSection='home'|'history'|'categories'|'references-contact';
-export type StorySceneDefinition={id:SceneId;nav:NavSection;label:string;shortLabel:string;tone:SceneTone};
+export type StorySceneDefinition={id:SceneId;nav:NavSection;label:string;shortLabel:string;tone:SceneTone;background?:string;backgroundPosition?:string;mobileBackgroundPosition?:string};
 
 export const sceneMeta:StorySceneDefinition[]=[
   {id:'home',nav:'home',label:'首页',shortLabel:'首页',tone:'light'},
-  {id:'history-origin-cover',nav:'history',label:'茶史：起源与利用',shortLabel:'起源',tone:'deep'},
-  {id:'history-origin-discovery',nav:'history',label:'茶史：被看见的一片叶',shortLabel:'发现',tone:'light'},
-  {id:'history-origin-tang-song',nav:'history',label:'茶史：茶进入生活记录',shortLabel:'唐宋',tone:'warm'},
-  {id:'history-exchange-cover',nav:'history',label:'茶史：茶事与交流',shortLabel:'茶事',tone:'deep'},
-  {id:'history-exchange-gathering',nav:'history',label:'茶史：茶在相见之间',shortLabel:'茶席',tone:'light'},
-  {id:'history-exchange-journey',nav:'history',label:'茶史：从地方风土走向世界',shortLabel:'传播',tone:'warm'},
-  {id:'history-craft-cover',nav:'history',label:'茶史：制茶与分类',shortLabel:'制茶',tone:'deep'},
-  {id:'history-craft-categories',nav:'history',label:'茶史：一片鲜叶，六种方向',shortLabel:'六类',tone:'light'},
+  {id:'history-origin-cover',nav:'history',label:'茶史：起源与利用',shortLabel:'起源',tone:'deep',background:'/images/tea-history/01.webp',backgroundPosition:'center',mobileBackgroundPosition:'30% center'},
+  {id:'history-origin-discovery',nav:'history',label:'茶史：被看见的一片叶',shortLabel:'发现',tone:'deep',background:'/images/tea-history/02.webp',backgroundPosition:'center',mobileBackgroundPosition:'43% center'},
+  {id:'history-origin-tang-song',nav:'history',label:'茶史：茶进入生活记录',shortLabel:'唐宋',tone:'deep',background:'/images/tea-history/03.webp',backgroundPosition:'center',mobileBackgroundPosition:'48% center'},
+  {id:'history-exchange-cover',nav:'history',label:'茶史：茶事与交流',shortLabel:'茶事',tone:'deep',background:'/images/tea-history/04.webp',backgroundPosition:'center',mobileBackgroundPosition:'55% center'},
+  {id:'history-exchange-gathering',nav:'history',label:'茶史：茶在相见之间',shortLabel:'茶席',tone:'deep',background:'/images/tea-history/05.webp',backgroundPosition:'center',mobileBackgroundPosition:'66% center'},
+  {id:'history-exchange-journey',nav:'history',label:'茶史：从地方风土走向世界',shortLabel:'传播',tone:'deep',background:'/images/tea-history/06.webp',backgroundPosition:'center',mobileBackgroundPosition:'30% center'},
+  {id:'history-craft-cover',nav:'history',label:'茶史：制茶与分类',shortLabel:'制茶',tone:'deep',background:'/images/tea-history/07.webp',backgroundPosition:'center',mobileBackgroundPosition:'30% center'},
+  {id:'history-craft-categories',nav:'history',label:'茶史：一片鲜叶，六种方向',shortLabel:'六类',tone:'deep',background:'/images/tea-history/08.webp',backgroundPosition:'center',mobileBackgroundPosition:'52% center'},
   {id:'categories',nav:'categories',label:'茶叶品类',shortLabel:'品类',tone:'warm'},
   {id:'references-contact',nav:'references-contact',label:'参考资料与联系我们',shortLabel:'联系',tone:'deep'}
 ];

@@ -12,7 +12,7 @@ import {
 } from './HomeSections';
 
 type Props={items:TeaItem[];onSectionChange:(section:NavSection)=>void};
-type SceneStyle=CSSProperties&{'--scene-visibility':number;'--scene-offset':number};
+type SceneStyle=CSSProperties&{'--scene-visibility':number;'--scene-offset':number;'--scene-background'?:string;'--scene-position'?:string;'--scene-position-mobile'?:string};
 type StoryStyle=CSSProperties&{'--scene-count':number};
 
 const clamp=(value:number,min:number,max:number)=>Math.min(max,Math.max(min,value));
@@ -125,12 +125,16 @@ export function ScrollStory({items,onSectionChange}:Props){
     <div className="story-stage" data-scene-tone={sceneMeta[activeIndex].tone}>
       {sceneMeta.map((scene,index)=>{
         const chapterIndex=index-1;
-        const style={'--scene-visibility':index===0?1:0,'--scene-offset':index===0?0:1} as SceneStyle;
+        const style={
+          '--scene-visibility':index===0?1:0,
+          '--scene-offset':index===0?0:1,
+          ...(scene.background?{'--scene-background':`url("${scene.background}")`,'--scene-position':scene.backgroundPosition||'center','--scene-position-mobile':scene.mobileBackgroundPosition||scene.backgroundPosition||'center'}:{})
+        } as SceneStyle;
         return <section
           id={scene.id}
           key={scene.id}
           ref={node=>{sceneRefs.current[index]=node}}
-          className={`story-scene tone-${scene.tone}${index===activeIndex?' is-active':''}`}
+          className={`story-scene tone-${scene.tone}${scene.background?' has-background':''}${index===activeIndex?' is-active':''}`}
           style={style}
           aria-labelledby={scene.id+'-title'}
           aria-hidden={stackedMode?undefined:index!==activeIndex}
